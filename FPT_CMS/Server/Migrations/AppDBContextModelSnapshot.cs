@@ -27,10 +27,19 @@ namespace Server.Migrations
                     b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SemesterId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Slot")
+                        .HasColumnType("int");
+
                     b.Property<string>("SubjectCode")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CourseId");
+
+                    b.HasIndex("SemesterId");
 
                     b.HasIndex("SubjectCode");
 
@@ -89,6 +98,51 @@ namespace Server.Migrations
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("Server.Entity.Grade", b =>
+                {
+                    b.Property<int>("GradeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GradeId"), 1L, 1);
+
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("GradeId");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Grades");
+                });
+
+            modelBuilder.Entity("Server.Entity.Semester", b =>
+                {
+                    b.Property<string>("SemesterId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("SemesterId");
+
+                    b.ToTable("Semesters");
+                });
+
             modelBuilder.Entity("Server.Entity.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -142,9 +196,6 @@ namespace Server.Migrations
                     b.Property<string>("SubjectCode")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Department")
-                        .HasColumnType("int");
-
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
@@ -162,8 +213,32 @@ namespace Server.Migrations
                     b.ToTable("Subjects");
                 });
 
+            modelBuilder.Entity("Server.Entity.Teacher", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teachers");
+                });
+
             modelBuilder.Entity("Server.Entity.Course", b =>
                 {
+                    b.HasOne("Server.Entity.Semester", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Server.Entity.Subject", null)
                         .WithMany("Courses")
                         .HasForeignKey("SubjectCode");
@@ -189,6 +264,17 @@ namespace Server.Migrations
                     b.Navigation("Subject");
                 });
 
+            modelBuilder.Entity("Server.Entity.Grade", b =>
+                {
+                    b.HasOne("Server.Entity.Course", null)
+                        .WithMany("Grades")
+                        .HasForeignKey("CourseId");
+
+                    b.HasOne("Server.Entity.Student", null)
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId");
+                });
+
             modelBuilder.Entity("Server.Entity.Student", b =>
                 {
                     b.HasOne("Server.Entity.Curriculum", null)
@@ -205,6 +291,11 @@ namespace Server.Migrations
                         .HasForeignKey("DepartmentId");
                 });
 
+            modelBuilder.Entity("Server.Entity.Course", b =>
+                {
+                    b.Navigation("Grades");
+                });
+
             modelBuilder.Entity("Server.Entity.Curriculum", b =>
                 {
                     b.Navigation("Students");
@@ -213,6 +304,16 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Entity.Department", b =>
                 {
                     b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("Server.Entity.Semester", b =>
+                {
+                    b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("Server.Entity.Student", b =>
+                {
+                    b.Navigation("Grades");
                 });
 
             modelBuilder.Entity("Server.Entity.Subject", b =>

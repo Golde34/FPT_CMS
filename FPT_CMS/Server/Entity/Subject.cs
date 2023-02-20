@@ -11,8 +11,7 @@ namespace Server.Entity
         public string SubjectCode { get; set; }
         public string SubjectName { get; set; }
         public decimal Fee { get; set; }
-        public int Department { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
-        public ICollection<CurriculumDetail> Details { get; set; }
+        public virtual ICollection<CurriculumDetail> Details { get; set; }
     }
 }

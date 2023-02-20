@@ -14,6 +14,9 @@ namespace Server.Entity
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Grade> Grades { get; set; }
+        public DbSet<Semester> Semesters { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,6 +30,8 @@ namespace Server.Entity
                     .HasForeignKey(d => d.SubjectCode)
                     .HasConstraintName("FK_CurriculumDetail_Subject");
             });
+
+            builder.Entity<Grade>().HasKey(x => x.GradeId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
