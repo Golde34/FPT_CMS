@@ -1,0 +1,42 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var isLogggedIn = false;
+    if (Context.Session.GetString("isLoggedIn") != null)
+    {
+        isLogggedIn = Context.Session.GetString("isLoggedIn").Equals("true");
+    }
+}
+
+<nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+        <i class="hamburger align-self-center"></i>
+    </a>
+
+    <div class="navbar-collapse collapse">
+        <ul class="navbar-nav navbar-align">
+            <li class="nav-item dropdown">
+                <a class="nav-link d-none d-sm-inline-block" href="https://daihoc.fpt.edu.vn/">
+                    <img src="https://downloadlogomienphi.com/sites/default/files/logos/download-logo-vector-dai-hoc-fpt-mien-phi.jpg" class="avatar img-fluid rounded me-1" alt="FPT Education" />
+                </a>
+            </li>
+
+            
+            @if (isLogggedIn)
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link d-none d-sm-inline-block" href="#">
+                        <img src="img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Charles Hall" /> <span class="text-dark">Charles Hall</span>
+                    </a>
+                </li>
+            }
+            else{
+                <li class="nav-item dropdown">
+                    YOU ARE NOT LOGGED IN. (<a class="nav-link d-none d-sm-inline-block" href="#"><span class="text-success">LOG IN</span></a>)
+                </li>
+            }
+            
+        </ul>
+    </div>
+</nav>
