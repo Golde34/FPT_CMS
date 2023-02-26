@@ -15,6 +15,7 @@ namespace Server.Entity
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
+        public Account Account { get; set; }
         public virtual ICollection<Grade> Grades { get; }
     }
 }

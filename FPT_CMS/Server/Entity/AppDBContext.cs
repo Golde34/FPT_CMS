@@ -17,6 +17,7 @@ namespace Server.Entity
         public DbSet<Grade> Grades { get; set; }
         public DbSet<Semester> Semesters { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Account> Accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
