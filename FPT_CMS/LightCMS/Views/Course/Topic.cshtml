@@ -1,0 +1,184 @@
+﻿@{
+    ViewData["Title"] = "Topic";
+	var role = "";
+	if (Context.Session.GetString("Role") != null)
+	{
+		role = Context.Session.GetString("Role");
+	}
+}
+
+<body>
+    <div class="wrapper">
+
+        <div id="sb-partialDiv">
+            @await Component.InvokeAsync("Sidebar", new {})
+        </div>
+
+        <div class="main">
+            <div id="sb-partialDiv">
+                @await Component.InvokeAsync("Navbar", new {})
+            </div>
+
+			@if(role.Equals("Student")){
+				<main class="content">
+					<div class="container-fluid p-0">
+
+						<h1 class="h3 mb-3">All Topic(s)</h1>
+
+						<div class="row">
+							<div class="col-md-8 col-xl-9">
+								<div class="card">
+									<div class="card-header">
+										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
+									</div>
+									<div class="card-body">
+										<p>05/03/2023</p>
+									</div>
+								</div>
+
+								<div class="card">
+									<div class="card-header">
+										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
+									</div>
+									<div class="card-body">
+										<p>05/03/2023</p>
+									</div>
+								</div>
+
+								<div class="card">
+									<div class="card-header">
+										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
+									</div>
+									<div class="card-body">
+										<p>05/03/2023</p>
+									</div>
+								</div>
+								<div class="d-grid">
+									<button id="btnLoadMore" class="btn btn-primary">Load more</button>
+								</div>
+							</div>
+
+							<div class="col-md-4 col-xl-3">
+								<div class="card mb-3">
+									<div class="card-header text-center">
+										<h5 class="card-title mb-0">Due this week</h5>
+									</div>
+									<hr class="my-0" />
+									<div class="card-body">
+										<a href="/Course/TopicContent"><h5 class="h6 card-title">Assignment</h5></a>
+										<div>
+											Due Date: <p class="badge bg-primary me-1 my-1">05/03/2023</p>
+										</div>
+									</div>
+									<hr class="my-0" />
+									<div class="card-body">
+										<a href="/Course/TopicContent"><h5 class="h6 card-title">Assignment</h5></a>
+										<div>
+											Due Date: <p class="badge bg-primary me-1 my-1">05/03/2023</p>
+										</div>
+									</div>
+									<hr class="my-0" />
+									<div class="card-body">
+										<a href="/Course/TopicContent"><h5 class="h6 card-title">Assignment</h5></a>
+										<div>
+											Due Date: <p class="badge bg-dan me-1 my-1">02/03/2023</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</main>
+			}
+
+			@if (role.Equals("Teacher"))
+			{
+				<main class="content">
+					<div class="container-fluid p-0">
+
+						<h1 class="h3 mb-3">All Topic(s)</h1>
+
+						<div class="row">
+							<div id="list-topic" class="col-md-6">
+								<div class="card">
+									<div class="card-header">
+										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
+									</div>
+									<div class="card-body">
+										Due Date: <p>05/03/2023</p>
+										<div class="d-flex justify-content-between">
+											<a href="#"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
+											<a href="#"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
+										</div>
+									</div>
+								</div>
+
+								<div class="d-grid">
+									<button id="btnLoadMore" class="btn btn-primary">Load more</button>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="card mb-3">
+									<div class="card-header">
+										<h5 class="card-title mb-0">Create a New Topic</h5>
+									</div>
+									<div class="card-body">
+										<input type="text" id="topic-title" class="form-control" placeholder="Enter new Topic Title" required>
+									</div>
+									<div class="card-body">
+										<textarea id="topic-requirement" class="form-control" rows="10" placeholder="Specify your requirement" required></textarea>
+									</div>
+									<div class="card-body">
+										<label for="due-date">Due Date: </label><br>
+										<input id="due-date" type="date" required>
+									</div>
+									<div class="card-body">
+										<button id="btnCreate" class="btn btn-success">Create Topic</button>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				</main>
+			}
+			
+
+            <div id="sb-partialDiv">
+                @await Component.InvokeAsync("Footer", new {})
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="~/js/app.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var index = 1;
+
+		$("#btnCreate").click(function() {
+			var html = `		<div class="card">
+									<div class="card-header">
+										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment ${index}</h5></a>
+									</div>
+									<div class="card-body">
+										Due Date: <p>05/03/2023</p>
+										<div class="d-flex justify-content-between">
+											<a href="#"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
+											<a href="#"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
+										</div>
+									</div>
+								</div>`;
+			$("#list-topic").prepend(html);
+			feather.replace()
+
+			index = index + 1;
+		});
+	});
+</script>
+

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -44,10 +46,17 @@ namespace LightCMS.Controllers
                 HttpResponseMessage response = await client.PostAsync(CmsApiUrl, content);
                 if (response.IsSuccessStatusCode)
                 {
-                    // Get the response
+                    // Get the token from response
                     var token = await response.Content.ReadAsStringAsync();
 
-                    HttpContext.Session.SetString("JWT", token);
+                    // Decode the token and get the role of account
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtSecurityToken = handler.ReadJwtToken(token.Replace('"', ' ').Trim());
+                    var role = jwtSecurityToken.Claims.First(claim => claim.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
+
+                    // Store data in session
+                    HttpContext.Session.SetString("Role", role.ToString());
+                    HttpContext.Session.SetString("JWT", token.Replace('"', ' ').Trim());
                     HttpContext.Session.SetString("isLoggedIn", "true");
                     return RedirectToAction("Index", "Home");
                 }
@@ -62,6 +71,7 @@ namespace LightCMS.Controllers
         [HttpGet]
         public IActionResult Logout()
         {
+            HttpContext.Session.Remove("JWT");
             HttpContext.Session.Remove("JWT");
             HttpContext.Session.Remove("isLoggedIn");
             return RedirectToAction("Login", "Account");
