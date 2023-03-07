@@ -18,6 +18,8 @@ namespace Server.Entity
         public DbSet<Semester> Semesters { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Topic> Topics { get; set; }
+        public DbSet<Submission> Submissions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Server.Entity;
 
@@ -11,9 +12,10 @@ using Server.Entity;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230306124259_UpdateTopicSubmission")]
+    partial class UpdateTopicSubmission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -302,9 +304,6 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("Due")
                         .HasColumnType("datetime2");
 
@@ -317,8 +316,6 @@ namespace Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
 
                     b.ToTable("Topics");
                 });
@@ -413,18 +410,9 @@ namespace Server.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("Server.Entity.Topic", b =>
-                {
-                    b.HasOne("Server.Entity.Course", null)
-                        .WithMany("Topics")
-                        .HasForeignKey("CourseId");
-                });
-
             modelBuilder.Entity("Server.Entity.Course", b =>
                 {
                     b.Navigation("Grades");
-
-                    b.Navigation("Topics");
                 });
 
             modelBuilder.Entity("Server.Entity.Curriculum", b =>

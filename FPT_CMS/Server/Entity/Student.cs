@@ -4,7 +4,10 @@ namespace Server.Entity
 {
     public class Student
     {
-        public Student() { Grades = new List<Grade>(); }
+        public Student() { 
+            Grades = new List<Grade>();
+            Submissions = new List<Submission>();
+        }
         public int Id { get; set; }
         public string StudentRollNumber { get; set; }
         public string StudentName { get; set; }
@@ -17,5 +20,6 @@ namespace Server.Entity
         public string Email { get; set; }
         public Account Account { get; set; }
         public virtual ICollection<Grade> Grades { get; }
+        public virtual ICollection<Submission> Submissions { get; set; }
     }
 }
