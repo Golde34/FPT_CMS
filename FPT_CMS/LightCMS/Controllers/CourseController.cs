@@ -15,7 +15,7 @@ namespace LightCMS.Controllers
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            CmsApiUrl = "localhost:5195/api/Courses";
+            CmsApiUrl = "http://localhost:5195/api/Courses";
         }
 
         public async Task<IActionResult> Index()

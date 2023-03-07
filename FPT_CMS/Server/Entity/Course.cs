@@ -8,6 +8,7 @@ namespace Server.Entity
         {
             Grades = new List<Grade>();
             Topics = new List<Topic>();
+            Notifications= new List<Notification>();
         }
 
         public string CourseId { get; set; }
@@ -19,6 +20,7 @@ namespace Server.Entity
 
         public virtual ICollection<Grade> Grades { get; set; }
         public virtual ICollection<Topic> Topics { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
 
         public virtual Subject? Subject { get; set; }
         public virtual Teacher? Teacher { get; set; }

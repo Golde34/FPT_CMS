@@ -43,6 +43,32 @@ namespace Server.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("Server.Entity.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NotificationID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NotificationID");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Server.Entity.Course", b =>
                 {
                     b.Property<string>("CourseId")
@@ -155,6 +181,33 @@ namespace Server.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("Grades");
+                });
+
+            modelBuilder.Entity("Server.Entity.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"), 1L, 1);
+
+                    b.Property<string>("CourseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UploadFile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("NotificationId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Server.Entity.Semester", b =>
@@ -332,9 +385,18 @@ namespace Server.Migrations
                     b.ToTable("Topics");
                 });
 
+            modelBuilder.Entity("Server.Entity.Comment", b =>
+                {
+                    b.HasOne("Server.Entity.Notification", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("NotificationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Server.Entity.Course", b =>
                 {
-                    b.HasOne("Server.Entity.Semester", null)
+                    b.HasOne("Server.Entity.Semester", "Semester")
                         .WithMany("Courses")
                         .HasForeignKey("SemesterId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -347,6 +409,8 @@ namespace Server.Migrations
                     b.HasOne("Server.Entity.Teacher", "Teacher")
                         .WithMany("Courses")
                         .HasForeignKey("TeacherId");
+
+                    b.Navigation("Semester");
 
                     b.Navigation("Subject");
 
@@ -382,6 +446,17 @@ namespace Server.Migrations
                     b.HasOne("Server.Entity.Student", null)
                         .WithMany("Grades")
                         .HasForeignKey("StudentId");
+                });
+
+            modelBuilder.Entity("Server.Entity.Notification", b =>
+                {
+                    b.HasOne("Server.Entity.Course", "Course")
+                        .WithMany("Notifications")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Server.Entity.Student", b =>
@@ -441,6 +516,8 @@ namespace Server.Migrations
                 {
                     b.Navigation("Grades");
 
+                    b.Navigation("Notifications");
+
                     b.Navigation("Topics");
                 });
 
@@ -452,6 +529,11 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Entity.Department", b =>
                 {
                     b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("Server.Entity.Notification", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("Server.Entity.Semester", b =>
