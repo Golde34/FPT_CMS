@@ -17,6 +17,7 @@
                 <h1 class="h3 d-inline align-middle">Add new course</h1>
                 <form method="post">
                     <div asp-validation-summary="All"></div>
+                    <input type="hidden" asp-for="CourseId"/>
                     <div class="row">
                         <div class="card">
                             <div class="card-header">
@@ -35,16 +36,32 @@
                             </div>
                         </div>
                         <div class="card">
-                            <div class="card=header">
-                                <h5 class="card-title mb-0">
-                                    
-                                </h5>
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Semester</h5>
                             </div>
                             <div class="card-body">
-                                
+                                <select asp-for="Semester" class="form-select mb-3">
+                                    @foreach (var semester in ViewBag.Semester)
+                                    {
+                                        <option value="@semester.SemesterID">@semester.SemesterID</option>
+                                    }
+                                </select>
                             </div>
                         </div>
-                        <input class="btn btn-primary align-content-center" type="submit" value="Add"/>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Subject</h5>
+                            </div>
+                            <div class="card-body">
+                                <select asp-for="Subject" class="form-select mb-3">
+                                    @foreach (var subject in ViewBag.Subject)
+                                    {
+                                        <option value="@subject.SubjectCode">@subject.SubjectName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <input class="btn btn-primary" type="submit" value="Add"/>
                     </div>
                 </form>
             </div>

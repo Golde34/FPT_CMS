@@ -1,8 +1,8 @@
-﻿namespace LightCMS.DTO;
+﻿namespace Server.DTO;
 
 public class CourseDTO
 {
-    public string CourseId { get; set; }
+    public string CourseID { get; set; }
     public string CourseName { get; set; }
     public string Slot { get; set; }
     public string Semester { get; set; }

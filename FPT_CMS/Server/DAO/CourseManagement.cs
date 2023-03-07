@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Server.DTO;
 using Server.Entity;
 
 namespace Server.DAO
@@ -8,7 +9,9 @@ namespace Server.DAO
         private static CourseManagement instance;
         private static readonly object instancelock = new object();
 
-        public CourseManagement() { }
+        public CourseManagement()
+        {
+        }
 
         public static CourseManagement Instance
         {
@@ -18,25 +21,34 @@ namespace Server.DAO
                 {
                     if (instance == null) instance = new CourseManagement();
                 }
+
                 return instance;
             }
         }
 
-        public Course AddCourse(Course Course)
+        public Course AddCourse(CourseDTO course)
         {
             try
             {
-                Course _Course = GetCourseById(Course.CourseId);
-                if (_Course == null)
+                Course _Course = new Course
+                {
+                    CourseId = course.CourseID,
+                    CourseName = course.CourseName,
+                    Slot = Convert.ToInt32(course.Slot),
+                    SemesterId = course.Semester,
+                    SubjectCode = course.Subject
+                };
+                Course _course = GetCourseById(_Course.CourseId);
+                if (_course == null)
                 {
                     var context = new AppDBContext();
-                    context.Courses.Add(Course);
+                    context.Courses.Add(_Course);
                     context.SaveChanges();
-                    return Course;
+                    return _course;
                 }
                 else
                 {
-                    throw new Exception("The Course's username has already bean taken.");
+                    throw new Exception("The Course's username has already been taken.");
                 }
             }
             catch (Exception e)
@@ -103,6 +115,7 @@ namespace Server.DAO
             {
                 throw new Exception(e.Message);
             }
+
             return Courses;
         }
 
@@ -119,7 +132,24 @@ namespace Server.DAO
             {
                 throw new Exception(e.Message);
             }
+
             return Course;
+        }
+
+        public Course GetLastCourse()
+        {
+            Course course;
+            try
+            {
+                var _dbContext = new AppDBContext();
+                course = _dbContext.Courses.OrderBy(p => Convert.ToInt32(p.CourseId)).Last();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            return course;
         }
     }
 }
