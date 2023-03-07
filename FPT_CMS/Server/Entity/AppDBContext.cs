@@ -5,8 +5,13 @@ namespace Server.Entity
 {
     public class AppDBContext : DbContext
     {
-        public AppDBContext() { }
-        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
+        public AppDBContext()
+        {
+        }
+
+        public AppDBContext(DbContextOptions<AppDBContext> options) : base(options)
+        {
+        }
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Curriculum> Curricula { get; set; }
@@ -24,7 +29,7 @@ namespace Server.Entity
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-                
+
             builder.Entity<CurriculumDetail>(entity =>
             {
                 entity.HasKey(x => new { x.CurriculumId, x.SubjectCode });
@@ -35,6 +40,13 @@ namespace Server.Entity
             });
 
             builder.Entity<Grade>().HasKey(x => x.GradeId);
+
+            builder.Entity<Course>(entity =>
+            {
+                entity.HasOne(d => d.Subject).WithMany(p => p.Courses).HasForeignKey(d => d.SubjectCode);
+                entity.HasOne(d => d.Teacher).WithMany(p => p.Courses).HasForeignKey(d => d.TeacherId);
+                entity.HasOne(d => d.Semester).WithMany(p => p.Courses).HasForeignKey(d => d.SemesterId);
+            });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -42,9 +54,9 @@ namespace Server.Entity
             if (!optionsBuilder.IsConfigured)
             {
                 IConfigurationRoot configuration = new ConfigurationBuilder()
-                   .SetBasePath(Directory.GetCurrentDirectory())
-                   .AddJsonFile("appsettings.json")
-                   .Build();
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
                 var connectionString = configuration.GetConnectionString("DBString");
                 optionsBuilder.UseSqlServer(connectionString);
             }

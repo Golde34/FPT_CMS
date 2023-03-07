@@ -48,6 +48,10 @@ namespace Server.Migrations
                     b.Property<string>("CourseId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CourseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SemesterId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -58,11 +62,16 @@ namespace Server.Migrations
                     b.Property<string>("SubjectCode")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("TeacherId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("CourseId");
 
                     b.HasIndex("SemesterId");
 
                     b.HasIndex("SubjectCode");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Courses");
                 });
@@ -331,9 +340,17 @@ namespace Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Server.Entity.Subject", null)
+                    b.HasOne("Server.Entity.Subject", "Subject")
                         .WithMany("Courses")
                         .HasForeignKey("SubjectCode");
+
+                    b.HasOne("Server.Entity.Teacher", "Teacher")
+                        .WithMany("Courses")
+                        .HasForeignKey("TeacherId");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Server.Entity.CurriculumDetail", b =>
@@ -454,6 +471,11 @@ namespace Server.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("Details");
+                });
+
+            modelBuilder.Entity("Server.Entity.Teacher", b =>
+                {
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("Server.Entity.Topic", b =>
