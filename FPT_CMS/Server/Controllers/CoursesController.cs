@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Server.DAO;
+using Server.DTO;
 using Server.Entity;
 using Server.Entity.Enum;
 using Server.Utils;
@@ -42,7 +43,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddCourse(Course course)
+        public IActionResult AddCourse(CourseDTO course)
         {
             // string? tokenParse = DecodeJwtToken.GetRoleFromToken(Request.Headers[HeaderNames.Authorization]);
             // if (tokenParse == null)
@@ -85,8 +86,8 @@ namespace Server.Controllers
             return Ok();
         }
 
-        [HttpGet("{id:int}")]
-        public Course GetCourseByID(int id)
+        [HttpGet("{id:alpha}")]
+        public Course GetCourseByID(string id)
         {
             Course _course;
             try
@@ -99,6 +100,22 @@ namespace Server.Controllers
                 throw new Exception(e.Message);
             }
 
+            return _course;
+        }
+
+        [HttpGet]
+        public Course GetLastCourse()
+        {
+            Course _course;
+            try
+            {
+                var _courseManagement = new CourseManagement();
+                _course = _courseManagement.GetLastCourse();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
             return _course;
         }
     }

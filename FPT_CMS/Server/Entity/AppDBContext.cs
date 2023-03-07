@@ -50,6 +50,16 @@ namespace Server.Entity
                 entity.HasOne(d => d.Semester).WithMany(p => p.Courses).HasForeignKey(d => d.SemesterId);
             });
 
+            builder.Entity<Topic>(entity =>
+            {
+                entity.HasOne(d => d.Course).WithMany(p => p.Topics).HasForeignKey(d => d.CourseId);
+            });
+
+            builder.Entity<Submission>(entity =>
+            {
+                entity.HasOne(d => d.Topic).WithMany(p => p.Submissions).HasForeignKey(d => d.TopicId);
+            });
+
             builder.Entity<Notification>(entity =>
             {
                 entity.HasOne(d => d.Course).WithMany(p => p.Notifications).HasForeignKey(d => d.CourseId);

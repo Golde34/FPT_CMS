@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Server.DAO;
 using Server.Entity;
 
@@ -9,22 +8,22 @@ namespace Server.Controllers;
 [Authorize]
 [Route("api/[controller]/[action]")]
 [ApiController]
-public class SemesterController
+public class SubjectController
 {
     [HttpGet]
-    public ActionResult<List<Semester>> GetSemesters()
+    public ActionResult<IEnumerable<Subject>> GetSubjects()
     {
-        List<Semester> _semesters;
+        List<Subject> _subjects;
         try
         {
-            var _semesterManagement = new SemesterManagement();
-            _semesters = _semesterManagement.GetSemesters().ToList();
+            var _subjectManagement = new SubjectManagement();
+            _subjects = _subjectManagement.GetSubjects().ToList();
         }
         catch (Exception e)
         {
             throw new Exception(e.Message);
         }
 
-        return _semesters;
+        return _subjects;
     }
 }
