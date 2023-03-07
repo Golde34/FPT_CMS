@@ -47,6 +47,16 @@ namespace Server.Entity
                 entity.HasOne(d => d.Teacher).WithMany(p => p.Courses).HasForeignKey(d => d.TeacherId);
                 entity.HasOne(d => d.Semester).WithMany(p => p.Courses).HasForeignKey(d => d.SemesterId);
             });
+
+            builder.Entity<Topic>(entity =>
+            {
+                entity.HasOne(d => d.Course).WithMany(p => p.Topics).HasForeignKey(d => d.CourseId);
+            });
+
+            builder.Entity<Submission>(entity =>
+            {
+                entity.HasOne(d => d.Topic).WithMany(p => p.Submissions).HasForeignKey(d => d.TopicId);
+            });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
