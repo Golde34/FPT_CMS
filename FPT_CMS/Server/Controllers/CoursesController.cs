@@ -86,7 +86,7 @@ namespace Server.Controllers
             return Ok();
         }
 
-        [HttpGet("{id:alpha}")]
+        [HttpGet("{id}")]
         public Course GetCourseByID(string id)
         {
             Course _course;

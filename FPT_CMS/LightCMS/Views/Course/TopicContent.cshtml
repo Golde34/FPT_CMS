@@ -1,10 +1,15 @@
-﻿@{
+﻿@using LightCMS.DTO;
+@model TopicDTO
+
+@{
 	ViewData["Title"] = "Topic Content";
 	var role = "";
 	if (Context.Session.GetString("Role") != null)
 	{
 		role = Context.Session.GetString("Role");
 	}
+
+	var today = DateTime.Today;
 }
 
 <body>
@@ -38,7 +43,12 @@
 										<p class="card-text">Write a program that prints the numbers from 1 to 100. 
 											But for multiples of three print Fizz instead of the number and for the multiples of five print Buzz. 
 											For numbers which are multiples of both three and five print FizzBuzz.</p>
-										<button id="btnSubmit" class="btn btn-primary">Submit your work</button>
+										@if(today > Model.Due){
+											<p class="text-danger">Overdue</p>
+										}
+										else{
+											<button id="btnSubmit" class="btn btn-primary">Submit your work</button>
+										}
 									</div>
 								</div>
 								<div id="form-zip" class="card" style="display: none">
@@ -46,8 +56,14 @@
 										<div class="card-header">
 											<h5 class="card-title mb-0">Upload your zip file here</h5>
 										</div>
+										<div class="card-body" hidden>
+											<input name="topicId" type="text" value="@Model.Id" readonly/>
+										</div>
 										<div class="card-body">
-											<input type="file" accept=".zip,.rar" />
+											<input name="Name" type="text" placeholder="Name your file"/>
+										</div>
+										<div class="card-body">
+											<input name="files" type="file" accept=".rar" />
 										</div>
 										<div class="card-body">
 											<input type="submit" class="btn btn-success" value="Upload" />
@@ -75,15 +91,13 @@
 								<div class="card">
 									<img class="card-img-top" src="https://images02.vietnamworks.com//companyprofile/FPT-Education/en/image6.jpg" alt="Unsplash">
 									<div class="card-header">
-										<h5 class="card-title mb-0">Assignment 1</h5>
+										<h5 class="card-title mb-0">@Model.Title</h5>
 									</div>
 									<div class="card-body">
-										<p class="card-text">Write a program that prints the numbers from 1 to 100. 
-											But for multiples of three print Fizz instead of the number and for the multiples of five print Buzz. 
-											For numbers which are multiples of both three and five print FizzBuzz.</p>
+										<p class="card-text">@Model.Requirement</p>
 										<div class="d-flex justify-content-between">
-											<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="mdo"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
-											<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal" data-whatever="mdo"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
+											<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
+											<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmModal"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
 										</div>
 									</div>
 								</div>
@@ -142,6 +156,23 @@
 						</div>
 					</div>
 				</div>
+
+				<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-danger" id="btnDelete">Delete Topic</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			}
 
 			<div id="sb-partialDiv">
@@ -161,8 +192,27 @@
 		$("#btnSubmit").click(function() {
 			$("#form-zip").css("display", "block");
 		});
+
+		$("#btnDelete").click(function() {
+			$.ajax({
+				//prevent reload on ajax
+				url: "http://localhost:5195/api/Topic/DeleteTopic/"+@Model.Id.ToString(),
+				type: "DELETE",
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader("Authorization", "Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()");
+				},
+				contentType: "application/json",
+				success: function (data) {
+					location.href = "http://localhost:5259/Course/Topic?courseId="+@Model.CourseId
+				},
+				error: function (data) {
+					alert("Error while deleting topic!!") ;   
+				}
+			});
+		});
 	});
 </script>
+
 <script type="text/javascript">
 	$('#exampleModal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget) // Button that triggered the modal

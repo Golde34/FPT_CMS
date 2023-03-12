@@ -1,7 +1,6 @@
 ﻿using Server.DAO;
 using Server.Entity;
 using Server.Repository.@interface;
-using Server.Repository.@interface;
 
 namespace Server.Repository
 {
@@ -12,5 +11,6 @@ namespace Server.Repository
         Student IStudentRepo.DeleteStudent(Student Student) => StudentManagement.Instance.DeleteStudent(Student);
         IEnumerable<Student> IStudentRepo.GetStudents() => StudentManagement.Instance.GetStudents();
         Student IStudentRepo.GetStudentById(int? id) => StudentManagement.Instance.GetStudentById(id);
+        Student IStudentRepo.GetStudentByAccountId(string id) => StudentManagement.Instance.GetStudentByAccountId(id);
     }
 }

@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using LightCMS.DTO;
 using LightCMS.Utils;
+using Newtonsoft.Json;
 
 namespace LightCMS.Controllers
 {
@@ -122,19 +123,91 @@ namespace LightCMS.Controllers
             return View(courseDTO);
         }
 
-        public IActionResult Detail()
+        public async Task<IActionResult> Detail(string courseId)
         {
-            return View();
+            // GET JWT AND END IT ALONG WITH THE REQUEST
+            if (HttpContext.Session.GetString("JWT") != null)
+            {
+                var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+            }
+
+            HttpResponseMessage response = await client.GetAsync(CmsApiUrl + "/GetCourseByID/" + courseId);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic course = Newtonsoft.Json.JsonConvert.DeserializeObject<CourseDTO>(strData);
+            return View(course);
         }
 
-        public IActionResult Topic()
+        public async Task<IActionResult> Topic(string courseId)
         {
-            return View();
+            // GET JWT AND END IT ALONG WITH THE REQUEST
+            if (HttpContext.Session.GetString("JWT") != null)
+            {
+                var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+            }
+
+            HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Topic/GetTopicsByCourseId/"+courseId);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            string strData = await response.Content.ReadAsStringAsync();
+            IEnumerable<TopicDTO> topics = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<TopicDTO>>(strData);
+
+            // Send courseId to View
+            ViewData["courseId"] = courseId;
+
+            return View(topics.OrderByDescending(t => t.Id));
         }
 
-        public IActionResult TopicContent()
+        public async Task<IActionResult> TopicContent(int topicId)
         {
-            return View();
+            // GET JWT AND END IT ALONG WITH THE REQUEST
+            if (HttpContext.Session.GetString("JWT") != null)
+            {
+                var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+            }
+
+            HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Topic/GetTopicById/" + topicId);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic topic = Newtonsoft.Json.JsonConvert.DeserializeObject<TopicDTO>(strData);
+            
+            return View(topic);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TopicContent(UploadFileDTO fileDTO)
+        {
+            if(fileDTO.files.Length > 0)
+            {
+                try
+                {
+                    string strData = JsonConvert.SerializeObject(fileDTO);
+                    HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(CmsApiUrl, content);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            return RedirectToAction("TopicContent", new { topicId = fileDTO.topicId });
         }
     }
 }

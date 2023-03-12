@@ -1,10 +1,18 @@
-﻿@{
-    ViewData["Title"] = "Topic";
+﻿@using LightCMS.DTO;
+@model IEnumerable<TopicDTO>
+
+@{
+	ViewData["Title"] = "Topic";
 	var role = "";
 	if (Context.Session.GetString("Role") != null)
 	{
 		role = Context.Session.GetString("Role");
 	}
+	var monday = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+
+	var sunday = monday.AddDays(6);
+
+	var today = DateTime.Today;
 }
 
 <body>
@@ -27,32 +35,18 @@
 
 						<div class="row">
 							<div class="col-md-8 col-xl-9">
-								<div class="card">
-									<div class="card-header">
-										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
+								@foreach (var topic in Model)
+								{
+									<div class="card">
+										<div class="card-header">
+											<a asp-controller="Course" asp-action="TopicContent" asp-route-topicId="@topic.Id"><h5 class="card-title mb-0">@topic.Title</h5></a>
+										</div>
+										<div class="card-body">
+											<p>@topic.Due.ToShortDateString()</p>
+										</div>
 									</div>
-									<div class="card-body">
-										<p>05/03/2023</p>
-									</div>
-								</div>
+								}
 
-								<div class="card">
-									<div class="card-header">
-										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
-									</div>
-									<div class="card-body">
-										<p>05/03/2023</p>
-									</div>
-								</div>
-
-								<div class="card">
-									<div class="card-header">
-										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
-									</div>
-									<div class="card-body">
-										<p>05/03/2023</p>
-									</div>
-								</div>
 								<div class="d-grid">
 									<button id="btnLoadMore" class="btn btn-primary">Load more</button>
 								</div>
@@ -61,29 +55,18 @@
 							<div class="col-md-4 col-xl-3">
 								<div class="card mb-3">
 									<div class="card-header text-center">
-										<h5 class="card-title mb-0">Due this week</h5>
+										<h5 class="card-title mb-0">Due this week (@monday.ToShortDateString() to @sunday.ToShortDateString())</h5>
 									</div>
-									<hr class="my-0" />
-									<div class="card-body">
-										<a href="/Course/TopicContent"><h5 class="h6 card-title">Assignment</h5></a>
-										<div>
-											Due Date: <p class="badge bg-primary me-1 my-1">05/03/2023</p>
+									@foreach (var topic in Model.Where(t => t.Due >= monday && t.Due <= sunday))
+									{
+										<hr class="my-0" />
+										<div class="card-body">
+											<a asp-controller="Course" asp-action="TopicContent" asp-route-topicId="@topic.Id"><h5 class="h6 card-title">@topic.Title</h5></a>
+											<div>
+												Due Date: <p class="badge @(topic.Due < today ? "bg-danger":"bg-primary") me-1 my-1">05/03/2023</p>
+											</div>
 										</div>
-									</div>
-									<hr class="my-0" />
-									<div class="card-body">
-										<a href="/Course/TopicContent"><h5 class="h6 card-title">Assignment</h5></a>
-										<div>
-											Due Date: <p class="badge bg-primary me-1 my-1">05/03/2023</p>
-										</div>
-									</div>
-									<hr class="my-0" />
-									<div class="card-body">
-										<a href="/Course/TopicContent"><h5 class="h6 card-title">Assignment</h5></a>
-										<div>
-											Due Date: <p class="badge bg-danger me-1 my-1">02/03/2023</p>
-										</div>
-									</div>
+									}
 								</div>
 							</div>
 						</div>
@@ -101,18 +84,17 @@
 
 						<div class="row">
 							<div id="list-topic" class="col-md-6">
-								<div class="card">
-									<div class="card-header">
-										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment</h5></a>
-									</div>
-									<div class="card-body">
-										Due Date: <p>05/03/2023</p>
-										<div class="d-flex justify-content-between">
-											<a href="#" data-toggle="modal" data-target="#exampleModal" data-whatever="mdo"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
-											<a href="#" data-toggle="modal" data-target="#exampleModal" data-whatever="mdo"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
+								@foreach (var topic in Model)
+								{
+									<div class="card">
+										<div class="card-header">
+											<a asp-controller="Course" asp-action="TopicContent" asp-route-topicId="@topic.Id"><h5 class="card-title mb-0">@topic.Title</h5></a>
+										</div>
+										<div class="card-body">
+											<p>@topic.Due.ToShortDateString()</p>
 										</div>
 									</div>
-								</div>
+								}
 
 								<div class="d-grid">
 									<button id="btnLoadMore" class="btn btn-primary">Load more</button>
@@ -125,14 +107,14 @@
 										<h5 class="card-title mb-0">Create a New Topic</h5>
 									</div>
 									<div class="card-body">
-										<input type="text" id="topic-title" class="form-control" placeholder="Enter new Topic Title" required>
+										<input type="text" id="topic-title" class="form-control" placeholder="Enter new Topic Title">
 									</div>
 									<div class="card-body">
-										<textarea id="topic-requirement" class="form-control" rows="10" placeholder="Specify your requirement" required></textarea>
+										<textarea id="topic-requirement" class="form-control" rows="10" placeholder="Specify your requirement"></textarea>
 									</div>
 									<div class="card-body">
 										<label for="due-date">Due Date: </label><br>
-										<input id="due-date" type="date" required>
+										<input id="topic-due" type="date">
 									</div>
 									<div class="card-body">
 										<button id="btnCreate" class="btn btn-success">Create Topic</button>
@@ -145,34 +127,18 @@
 					</div>
 				</main>
 
-				<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-					<div class="modal-dialog" role="document">
+				<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel">Topic</h5>
+								<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>
-							<div class="modal-body">
-							<form>
-								<div class="form-group">
-									<label for="topic-title" class="col-form-label">Title:</label>
-									<input type="text" class="form-control" id="topic-title">
-								</div>
-								<div class="form-group">
-									<label for="topic-requirement" class="col-form-label">Requirement:</label>
-									<textarea rows="10" class="form-control" id="topic-requirement"></textarea>
-								</div>
-								<div class="form-group">
-									<label for="topic-due" class="col-form-label">Due Date:</label>
-									<input type="date" class="form-control" id="topic-due">
-								</div>
-							</form>
-							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								<button type="button" class="btn btn-primary">Update Topic</button>
+								<button type="button" class="btn btn-danger" id="btnDelete">Delete Topic</button>
 							</div>
 						</div>
 					</div>
@@ -195,37 +161,47 @@
 <script src="https://unpkg.com/feather-icons"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		var index = 1;
+		$('#topic-due').val(new Date().toISOString().slice(0, 10));
+		$('#topic-due').attr({"min" : new Date().toISOString().slice(0, 10)});
 
 		$("#btnCreate").click(function() {
-			var html = `		<div class="card">
-									<div class="card-header">
-										<a href="/Course/TopicContent"><h5 class="card-title mb-0">Assignment ${index}</h5></a>
-									</div>
-									<div class="card-body">
-										Due Date: <p>05/03/2023</p>
-										<div class="d-flex justify-content-between">
-											<a href="#"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
-											<a href="#"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
-										</div>
-									</div>
-								</div>`;
-			$("#list-topic").prepend(html);
-			feather.replace()
+			var topic = {
+				Id: 0,
+				Title: $( "#topic-title" ).val(),
+				Requirement: $( "#topic-requirement" ).val(),
+				Due: $('#topic-due').val(),
+				CourseId: "@ViewData["courseId"]"
+			}
 
-			index = index + 1;
+			$.ajax({
+				//prevent reload on ajax
+				url: "http://localhost:5195/api/Topic/CreateTopic",
+				type: "POST",
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader("Authorization", "Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()");
+				},
+				data: JSON.stringify(topic),
+				contentType: "application/json",
+				success: function (data) {
+					var newTopic = data;
+
+					//prevent reload 
+					var html = `	<div class="card">
+										<div class="card-header">
+											<a href="/Course/TopicContent?topicId=${newTopic.id}"><h5 class="card-title mb-0">${newTopic.title}</h5></a>
+										</div>
+										<div class="card-body">
+											<p>${newTopic.due}</p>
+										</div>
+									</div>`;
+					$("#list-topic").prepend(html);
+					feather.replace();
+				},
+				error: function (data) {
+					alert("Error while creating topic!!") ;   
+				}
+			});
 		});
 	});
-</script>
-<script type="text/javascript">
-	$('#exampleModal').on('show.bs.modal', function (event) {
-		var button = $(event.relatedTarget) // Button that triggered the modal
-		var recipient = button.data('whatever') // Extract info from data-* attributes
-		// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-		// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-		var modal = $(this)
-		modal.find('.modal-title').text('Edit Topic')
-		modal.find('.modal-body input').val(recipient)
-	})
 </script>
 

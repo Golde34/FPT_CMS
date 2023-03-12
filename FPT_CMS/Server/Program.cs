@@ -4,6 +4,21 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+/* 
+ * Cross-Origin Resource Sharing (CORS) is an HTTP-header based mechanism
+ * that allows a server to indicate any origins (domain, scheme, or port)
+ * other than its own from which a browser should permit loading resources. 
+ */
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -30,8 +45,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

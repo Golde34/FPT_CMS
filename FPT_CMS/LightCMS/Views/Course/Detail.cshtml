@@ -1,4 +1,7 @@
-﻿@{
+﻿@using LightCMS.DTO;
+@model CourseDTO
+
+@{
     ViewData["Title"] = "Detail";
 }
 
@@ -183,7 +186,7 @@
 
 									<hr />
 									<div class="d-grid">
-										<a href="/Course/Topic" class="btn btn-primary">Load more</a>
+										<a class="btn btn-primary" asp-controller="Course" asp-action="Topic" asp-route-courseId="@Model.CourseId">Load Topic</a>
 									</div>
 								</div>
 							</div>
