@@ -53,7 +53,7 @@ namespace Server.Migrations
 
                     b.Property<string>("AccountId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("NotificationID")
                         .HasColumnType("int");
@@ -63,6 +63,8 @@ namespace Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("NotificationID");
 
@@ -191,6 +193,9 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"), 1L, 1);
 
+                    b.Property<string>("AccountId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CourseId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -204,6 +209,8 @@ namespace Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("NotificationId");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("CourseId");
 
@@ -387,11 +394,19 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Entity.Comment", b =>
                 {
+                    b.HasOne("Server.Entity.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Server.Entity.Notification", null)
                         .WithMany("Comments")
                         .HasForeignKey("NotificationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("Server.Entity.Course", b =>
@@ -450,11 +465,17 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Entity.Notification", b =>
                 {
+                    b.HasOne("Server.Entity.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId");
+
                     b.HasOne("Server.Entity.Course", "Course")
                         .WithMany("Notifications")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Account");
 
                     b.Navigation("Course");
                 });

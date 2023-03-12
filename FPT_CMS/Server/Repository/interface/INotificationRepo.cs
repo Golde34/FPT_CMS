@@ -7,7 +7,7 @@ namespace Server.Repository.@interface
         Notification AddNotification(Notification Notification);
         Notification UpdateNotification(Notification Notification);
         Notification DeleteNotification(Notification Notification);
-        IEnumerable<Notification> GetNotifications();
+        IEnumerable<Notification> GetNotifications(string courseId);
         Notification GetNotificationById(int? id);
     }
 }

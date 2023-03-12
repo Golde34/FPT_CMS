@@ -11,5 +11,6 @@ namespace Server.Repository
         Comment ICommentRepo.DeleteComment(Comment Comment) => CommentManagement.Instance.DeleteComment(Comment);
         IEnumerable<Comment> ICommentRepo.GetComments() => CommentManagement.Instance.GetComments();
         Comment ICommentRepo.GetCommentById(int? id) => CommentManagement.Instance.GetCommentById(id);
+        IEnumerable<Comment> ICommentRepo.GetCommentsByNotification(int notificationId) => CommentManagement.Instance.GetCommentsByNotification(notificationId);
     }
 }

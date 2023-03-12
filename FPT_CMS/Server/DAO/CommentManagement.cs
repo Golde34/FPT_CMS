@@ -121,5 +121,22 @@ namespace Server.DAO
             }
             return Comment;
         }
+
+        public IEnumerable<Comment> GetCommentsByNotification(int notificationId)
+        {
+            List<Comment> Comments;
+            try
+            {
+                var context = new AppDBContext();
+                Comments = context.Comments
+                    //.Include(a => a.Account)
+                    .Where(x => x.NotificationID == notificationId).ToList();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return Comments;
+        }
     }
 }

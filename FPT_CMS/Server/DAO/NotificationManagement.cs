@@ -91,13 +91,13 @@ namespace Server.DAO
             }
         }
 
-        public IEnumerable<Notification> GetNotifications()
+        public IEnumerable<Notification> GetNotifications(string courseId)
         {
             List<Notification> Notifications;
             try
             {
                 var context = new AppDBContext();
-                Notifications = context.Notifications.ToList();
+                Notifications = context.Notifications.Where(x => x.CourseId == courseId).ToList();
             }
             catch (Exception e)
             {

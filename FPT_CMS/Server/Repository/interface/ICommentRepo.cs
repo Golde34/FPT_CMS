@@ -9,5 +9,6 @@ namespace Server.Repository.@interface
         Comment DeleteComment(Comment Comment);
         IEnumerable<Comment> GetComments();
         Comment GetCommentById(int? id);
+        IEnumerable<Comment> GetCommentsByNotification(int notification);
     }
 }
