@@ -24,6 +24,7 @@ namespace LightCMS.Controllers
             CmsApiUrl = "http://localhost:5195/api/Courses";
         }
 
+        //Course Index
         public async Task<IActionResult> Index()
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
@@ -94,6 +95,7 @@ namespace LightCMS.Controllers
             return View(courseDTO);
         }
 
+        //Course Detail
 		public async Task<IActionResult> Detail(int id)
         {
 			jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
@@ -101,7 +103,7 @@ namespace LightCMS.Controllers
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
 			//Get Notifications
 			string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + id), this.client);
-			dynamic? notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotifcationDTO>>(strNotification);
+			dynamic? notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
 			ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
@@ -111,9 +113,32 @@ namespace LightCMS.Controllers
                 commentsDict.Add(noti.NotificationId, comments); 
             }
             ViewBag.Comment = commentsDict;
+
+            ViewBag.CourseId = id;
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddNotification(NotificationDTO notificationDTO)
+        {
+            HttpResponseMessage response;
+            string strData;
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            if (ModelState.IsValid)
+            {
+                strData = Newtonsoft.Json.JsonConvert.SerializeObject(notificationDTO);
+                HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
+                response = await client.PostAsync(CustomAPIDirection.GetCustomAPIDirection("Notification/AddNotification"), content);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            return View("Detail");
+        }
+
+        //Course Topic
         public async Task<IActionResult> Topic(string courseId)
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);

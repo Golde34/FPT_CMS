@@ -53,9 +53,11 @@ namespace LightCMS.Controllers
                     var handler = new JwtSecurityTokenHandler();
                     var jwtSecurityToken = handler.ReadJwtToken(token.Replace('"', ' ').Trim());
                     var role = jwtSecurityToken.Claims.First(claim => claim.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
-
+                    var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+ 
                     // Store data in session
                     HttpContext.Session.SetString("Role", role.ToString());
+                    HttpContext.Session.SetString("AccountId", accountId.ToString());
                     HttpContext.Session.SetString("JWT", token.Replace('"', ' ').Trim());
                     HttpContext.Session.SetString("isLoggedIn", "true");
                     return RedirectToAction("Index", "Home");

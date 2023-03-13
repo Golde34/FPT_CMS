@@ -4,6 +4,11 @@
     ViewData["Title"] = "Detail";
 
     Dictionary<object, object> dict = ViewBag.Comment;
+    var accountId = "";
+    if (Context.Session.GetString("AccountId") != null)
+    {
+        accountId = Context.Session.GetString("AccountId");
+    }
 }
 
 <body>
@@ -145,25 +150,26 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form method="POST" asp-controller="Course" asp-action="AddNotification">
+                                <input type="hidden" name="courseId" value="@ViewBag.CourseId" />
+                                <input type="hidden" name="accoutnId" value="@accountId" />
                                 <div class="form-group">
-                                    <label for="topic-title" class="col-form-label">Title:</label>
-                                    <input type="text" class="form-control" id="topic-title">
+                                    <label for="noti-text" class="col-form-label">Announce something here:</label>
+                                    <textarea rows="10" class="form-control" id="noti-text"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="topic-requirement" class="col-form-label">Requirement:</label>
-                                    <textarea rows="10" class="form-control" id="topic-requirement"></textarea>
+                                    <label for="noti-file" class="col-form-label">
+                                        <i class="align-middle" data-feather="upload"></i>
+                                    </label>
+                                    <input type="file" id="noti-file"/>
                                 </div>
-                                <div class="form-group">
-                                    <label for="topic-due" class="col-form-label">Due Date:</label>
-                                    <input type="date" class="form-control" id="topic-due">
-                                </div>
+                                <br />
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Update Topic</button>
-                        </div>
+                            <button type="button" class="btn btn-primary">POST</button>
+                        </div>            
                     </div>
                 </div>
             </div>

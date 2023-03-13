@@ -194,6 +194,7 @@ namespace Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"), 1L, 1);
 
                     b.Property<string>("AccountId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CourseId")
@@ -395,18 +396,20 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Entity.Comment", b =>
                 {
                     b.HasOne("Server.Entity.Account", "Account")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Server.Entity.Notification", null)
+                    b.HasOne("Server.Entity.Notification", "Notification")
                         .WithMany("Comments")
                         .HasForeignKey("NotificationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
+
+                    b.Navigation("Notification");
                 });
 
             modelBuilder.Entity("Server.Entity.Course", b =>
@@ -466,8 +469,10 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Entity.Notification", b =>
                 {
                     b.HasOne("Server.Entity.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId");
+                        .WithMany("Notifications")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Server.Entity.Course", "Course")
                         .WithMany("Notifications")
@@ -537,6 +542,13 @@ namespace Server.Migrations
                         .HasForeignKey("CourseId");
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Server.Entity.Account", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("Server.Entity.Course", b =>

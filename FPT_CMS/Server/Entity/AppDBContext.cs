@@ -63,6 +63,13 @@ namespace Server.Entity
             builder.Entity<Notification>(entity =>
             {
                 entity.HasOne(d => d.Course).WithMany(p => p.Notifications).HasForeignKey(d => d.CourseId);
+                entity.HasOne(d => d.Account).WithMany(p => p.Notifications).HasForeignKey(d => d.AccountId);
+            });
+
+            builder.Entity<Comment>(entity =>
+            {
+                entity.HasOne(d => d.Notification).WithMany(p => p.Comments).HasForeignKey(d => d.NotificationID);
+                entity.HasOne(d => d.Account).WithMany(p => p.Comments).HasForeignKey(d => d.AccountId).OnDelete(DeleteBehavior.NoAction);
             });
         }
 
