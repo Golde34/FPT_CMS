@@ -7,6 +7,7 @@ using LightCMS.Utils;
 using Newtonsoft.Json;
 using LightCMS.Services;
 using Newtonsoft.Json.Linq;
+using System.Xml.Linq;
 
 namespace LightCMS.Controllers
 {
@@ -156,29 +157,48 @@ namespace LightCMS.Controllers
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-            string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicsByCourseId/" + topicId, this.client);
+            string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicById/" + topicId, this.client);
             dynamic topic = Newtonsoft.Json.JsonConvert.DeserializeObject<TopicDTO>(strTopic);
             
             return View(topic);
         }
 
         [HttpPost]
-        public async Task<IActionResult> TopicContent(UploadFileDTO fileDTO)
+        public async Task<IActionResult> TopicContent(IFormFile file, int topicId, string name)
         {
-            if(fileDTO.files.Length > 0)
+            if(file != null && file.Length > 0)
             {
-                try
+                using (var client = new HttpClient())
                 {
-                    string strData = JsonConvert.SerializeObject(fileDTO);
-                    HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(CmsApiUrl, content);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
+                    using (var content = new MultipartFormDataContent())
+                    {
+                        // GET JWT AND END IT ALONG WITH THE REQUEST
+                        if (HttpContext.Session.GetString("JWT") != null)
+                        {
+                            var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+                        }
+
+                        // Add file content
+                        var fileContent = new StreamContent(file.OpenReadStream());
+                        content.Add(fileContent, "file", file.FileName);
+
+                        // Add other parameters
+                        content.Add(new StringContent(name), "name");
+                        content.Add(new StringContent(topicId.ToString()), "topicId");
+
+                        // Send the request to the API
+                        var response = await client.PostAsync("http://localhost:5195/api/Submission/AddSubmission", content);
+
+                        // Process the response as needed
+                        if (response.IsSuccessStatusCode)
+                        {
+                            return RedirectToAction("TopicContent", new { topicId = topicId });
+                        }
+                    }
                 }
             }
-            return RedirectToAction("TopicContent", new { topicId = fileDTO.topicId });
+            return RedirectToAction("TopicContent", new { topicId = topicId });
         }
     }
 }

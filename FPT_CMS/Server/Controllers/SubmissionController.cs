@@ -16,31 +16,39 @@ namespace Server.Controllers
     [ApiController]
     public class SubmissionController : Controller
 	{
-        private static IWebHostEnvironment _webHostEnvironment;
         private IStudentRepo studentRepo = new StudentRepository();
         private ISubmissionRepo submissionRepo = new SubmissionRepository();
+        private readonly IWebHostEnvironment _env;
+
+        public SubmissionController(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
 
         [HttpPost]
-        public IActionResult AddSubmission(UploadFileDTO fileDTO)
+        public IActionResult AddSubmission([FromForm] IFormFile file, [FromForm] int topicId, [FromForm] string name)
         {
-            if (!Directory.Exists(_webHostEnvironment.WebRootPath + "\\Submission\\"))
+            var webRootPath = _env.WebRootPath;
+            if (!Directory.Exists(webRootPath + "\\Submission\\"))
             {
-                Directory.CreateDirectory(_webHostEnvironment.WebRootPath + "\\Submission\\");
+                Directory.CreateDirectory(webRootPath + "\\Submission\\");
             }
 
             // Decode the token and get the role of account
             StringValues values;
             Request.Headers.TryGetValue("Authorization", out values);
             var token = values.ToString();
-            
+            string[] tokens = token.Split(" ");
+
+
             var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token.Replace('"', ' ').Trim());
+            var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
             var id = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
 
-            string path = _webHostEnvironment.WebRootPath + "\\Submission\\" + id + "_" + fileDTO.Name + ".rar";
+            string path = webRootPath + "\\Submission\\" + id + "_" + name + ".rar";
             using (FileStream fileStream = System.IO.File.Create(path))
             {
-                fileDTO.files.CopyTo(fileStream);
+                file.CopyTo(fileStream);
                 fileStream.Flush();
             }
 
@@ -49,7 +57,7 @@ namespace Server.Controllers
             submission.SubmitDate = DateTime.Now;
             submission.URL = path;
             submission.StudentId = studentRepo.GetStudentByAccountId(id).Id;
-            submission.TopicId = fileDTO.topicId;
+            submission.TopicId = topicId;
 
             submissionRepo.AddSubmission(submission);
 
