@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using Server.DAO;
-using Server.DTO;
+using System.IO;
 using Server.Entity;
 using Server.Repository;
 using Server.Repository.@interface;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 
 namespace Server.Controllers
 {
@@ -23,6 +21,41 @@ namespace Server.Controllers
         public SubmissionController(IWebHostEnvironment env)
         {
             _env = env;
+        }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpGet("{topicId}")]
+        public IActionResult GetSubmissions(int topicId)
+        {
+            List<Submission> submissions = submissionRepo.GetSubmissionsOfTopic(topicId);
+
+            return Ok(submissions);
+        }
+
+        [Authorize(Roles = "Student")]
+        [HttpGet("{topicId}")]
+        public IActionResult GetSubmission(int topicId)
+        {
+            // Decode the token and get the role of account
+            StringValues values;
+            Request.Headers.TryGetValue("Authorization", out values);
+            var token = values.ToString();
+            string[] tokens = token.Split(" ");
+
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
+            var id = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+
+            var studentId = studentRepo.GetStudentByAccountId(id).Id;
+
+            Submission submission = submissionRepo.GetExactSubmission(topicId, studentId);
+            if(submission == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(submission);
         }
 
         [HttpPost]
@@ -44,6 +77,17 @@ namespace Server.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
             var id = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+
+            Submission sub = submissionRepo.GetExactSubmission(topicId, studentRepo.GetStudentByAccountId(id).Id);
+            if(sub != null)
+            {
+                if (System.IO.File.Exists(sub.URL))
+                {
+                    // Delete the file
+                    System.IO.File.Delete(sub.URL);
+                }
+                submissionRepo.DelteSubmission(sub.Id);
+            }
 
             string path = webRootPath + "\\Submission\\" + id + "_" + name + ".rar";
             using (FileStream fileStream = System.IO.File.Create(path))

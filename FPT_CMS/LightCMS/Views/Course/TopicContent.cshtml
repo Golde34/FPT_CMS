@@ -47,7 +47,17 @@
 											<p class="text-danger">Overdue</p>
 										}
 										else{
-											<button id="btnSubmit" class="btn btn-primary">Submit your work</button>
+											if(ViewData["submission"] == null){
+												<button id="btnSubmit" class="btn btn-primary">Submit your work</button>
+											}
+											else{
+												var submission = (SubmissionDTO)ViewData["submission"];
+												var paths = submission.URL.Split("\\");
+												<div>
+													<button class="btn btn-warning" data-toggle="modal" data-target="#confirmModal">Edit your work</button>
+													@paths[paths.Length-1]
+												</div>
+											}
 										}
 									</div>
 								</div>
@@ -76,6 +86,23 @@
 
 					</div>
 				</main>
+
+				<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-warning" id="btn-edit-submission" data-dismiss="modal">Yes, I want to edit Submission</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			}
 
 			@if (role.Equals("Teacher"))
@@ -108,14 +135,20 @@
 										<h5 class="card-title mb-0">Submission</h5>
 									</div>
 									<div class="card-body">
-										<p class="card-text">Number of Submission: 4</p>
-										<div>
-											<a href="#" class="card-link">LongNVHE150379</a><br/>
-											<a href="#" class="card-link">LongNVHE150379</a><br/>											
-											<a href="#" class="card-link">LongNVHE150379</a><br/>
-											<a href="#" class="card-link">LongNVHE150379</a><br/>
-										</div>
-
+										@if(ViewData["submissions"]!=null){
+											var submissions = (List<SubmissionDTO>)ViewData["submissions"];
+											<p class="card-text">Number of Submission: @submissions.Count</p>
+											<div>
+												<a href="#" class="card-link"></a>
+												<a asp-controller="Submission" asp-action="ShowAll" asp-route-topicId="@Model.Id">Show all submissions and grade them</a><br/>
+											</div>
+										}
+										else{
+											<p class="card-text">Number of Submission: 0</p>
+											<div>
+												<a href="#" class="card-link">No Submissions Available</a><br/>
+											</div>
+										}
 									</div>
 								</div>
 							</div>
@@ -190,6 +223,10 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$("#btnSubmit").click(function() {
+			$("#form-zip").css("display", "block");
+		});
+
+		$("#btn-edit-submission").click(function() {
 			$("#form-zip").css("display", "block");
 		});
 

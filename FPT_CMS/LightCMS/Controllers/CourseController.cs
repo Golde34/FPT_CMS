@@ -159,7 +159,27 @@ namespace LightCMS.Controllers
 
             string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicById/" + topicId, this.client);
             dynamic topic = Newtonsoft.Json.JsonConvert.DeserializeObject<TopicDTO>(strTopic);
-            
+
+            if (HttpContext.Session.GetString("Role").Equals("Student"))
+            {
+                string strSubmission = await jwtService.GetObjects("http://localhost:5195/api/Submission/GetSubmission/" + topicId, this.client);
+                if (strSubmission != null)
+                {
+                    dynamic submission = Newtonsoft.Json.JsonConvert.DeserializeObject<SubmissionDTO>(strSubmission);
+                    ViewData["submission"] = submission;
+                }
+            }
+
+            if (HttpContext.Session.GetString("Role").Equals("Teacher"))
+            {
+                string strSubmissions = await jwtService.GetObjects("http://localhost:5195/api/Submission/GetSubmissions/" + topicId, this.client);
+                if (strSubmissions != null)
+                {
+                    dynamic submissions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SubmissionDTO>>(strSubmissions);
+                    ViewData["submissions"] = submissions;
+                }
+            }
+
             return View(topic);
         }
 
