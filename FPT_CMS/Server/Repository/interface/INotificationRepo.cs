@@ -9,5 +9,6 @@ namespace Server.Repository.@interface
         Notification DeleteNotification(Notification Notification);
         IEnumerable<Notification> GetNotifications(string courseId);
         Notification GetNotificationById(int? id);
+        Notification GetNotificationByTopicId(string? accountId, string? courseId);
     }
 }

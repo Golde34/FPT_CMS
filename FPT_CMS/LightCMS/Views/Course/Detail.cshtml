@@ -1,5 +1,5 @@
 @using LightCMS.DTO;
-@model CourseDTO
+@model NotificationDTO
 @{
     ViewData["Title"] = "Detail";
 
@@ -149,27 +149,27 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <form method="POST" asp-controller="Course" asp-action="AddNotification">
-                                <input type="hidden" name="courseId" value="@ViewBag.CourseId" />
-                                <input type="hidden" name="accoutnId" value="@accountId" />
+                        <div>@accountId</div>
+                        <form method="POST" asp-controller="Course" asp-action="AddNotification" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <input type="hidden" name="CourseId" value="@ViewBag.CourseId" />
+                                <input type="hidden" name="AccountId" value="@accountId" />
+                                <input type="hidden" name="UploadFile" value="" />
                                 <div class="form-group">
-                                    <label for="noti-text" class="col-form-label">Announce something here:</label>
-                                    <textarea rows="10" class="form-control" id="noti-text"></textarea>
+                                    <label asp-for="Text" class="control-form-label">Announce something here:</label>
+                                    <textarea asp-for="Text" class="form-control" rows="10"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="noti-file" class="col-form-label">
-                                        <i class="align-middle" data-feather="upload"></i>
-                                    </label>
-                                    <input type="file" id="noti-file"/>
+                                    <label id="file" class="control-label"><i class="align-middle" data-feather="upload"></i></label>
+                                    <input id="file" name="file" />
                                 </div>
                                 <br />
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">POST</button>
-                        </div>            
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="POST" />
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

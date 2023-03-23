@@ -9,7 +9,7 @@ namespace LightCMS.DTO
 		[Required]
 		public string Text { get; set; }
 		[AllowNull]
-		public IFormFile UploadFile { get; set; }
+		public string UploadFile { get; set; }
 		[Required]
 		public string CourseId { get; set; }
 		[Required]

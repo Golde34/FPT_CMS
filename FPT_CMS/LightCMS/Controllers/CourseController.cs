@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using LightCMS.DTO;
 using LightCMS.Utils;
-using Newtonsoft.Json;
 using LightCMS.Services;
-using Newtonsoft.Json.Linq;
-using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace LightCMS.Controllers
 {
@@ -104,8 +101,9 @@ namespace LightCMS.Controllers
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
 			//Get Notifications
 			string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + id), this.client);
-			dynamic? notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
-			ViewBag.Notification = notifications;
+			IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+            //IEnumerable<SubmissionDTO> submissions = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubmissionDTO>>(strSubmissions);
+            ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
             {
@@ -120,22 +118,64 @@ namespace LightCMS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNotification(NotificationDTO notificationDTO)
+        public async Task<IActionResult> AddNotification(NotificationDTO notificationDTO, [FromForm] IFormFile file)
         {
             HttpResponseMessage response;
             string strData;
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-            if (ModelState.IsValid)
+            if (notificationDTO.UploadFile != null && notificationDTO.UploadFile.Length > 0)
             {
-                strData = Newtonsoft.Json.JsonConvert.SerializeObject(notificationDTO);
-                HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
-                response = await client.PostAsync(CustomAPIDirection.GetCustomAPIDirection("Notification/AddNotification"), content);
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    return RedirectToAction("Index");
+                    using (var content = new MultipartFormDataContent())
+                    {
+                        // GET JWT AND END IT ALONG WITH THE REQUEST
+                        if (HttpContext.Session.GetString("JWT") != null)
+                        {
+                            var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+                        }
+
+                        notificationDTO.UploadFile = file.FileName;
+                        // Add file content
+                        var fileContent = new StreamContent(file.OpenReadStream());
+                        content.Add(fileContent, "UploadFile", file.FileName);
+
+                        // Add other parameters
+                        content.Add(new StringContent(notificationDTO.AccountId), "AccountId");
+                        content.Add(new StringContent(notificationDTO.CourseId), "CourseId");
+                        content.Add(new StringContent(notificationDTO.Text.ToString()), "Text");
+
+                        if (ModelState.IsValid)
+                        {
+                            response = await client.PostAsync("http://localhost:5195/api/Notification/AddNotification", content);
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                return RedirectToAction("Detail");
+                            }
+                        }
+                    }
                 }
             }
+            
+            Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
+            //Get Notifications
+            string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + notificationDTO.CourseId), this.client);
+            var notiJson = JsonConvert.DeserializeObject<string>(strNotification);
+            IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+            ViewBag.Notification = notifications;
+
+            foreach (var noti in notifications)
+            {
+                string strComment = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId), this.client);
+                dynamic? comments = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
+                commentsDict.Add(noti.NotificationId, comments);
+            }
+            ViewBag.Comment = commentsDict;
+
+            ViewBag.CourseId = notificationDTO.CourseId;
+
             return View("Detail");
         }
 

@@ -121,5 +121,20 @@ namespace Server.DAO
             }
             return Notification;
         }
+
+        public Notification GetNotificationByTopicId(string? accountId, string? courseId)
+        {
+            Notification Notification;
+            try
+            {
+                var _dbContext = new AppDBContext();
+                Notification = _dbContext.Notifications.Include(a => a.Account).Include(c => c.Course)
+                    .FirstOrDefault(t => t.AccountId== accountId && t.CourseId == courseId);
+            } catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return Notification;
+        }
     }
 }

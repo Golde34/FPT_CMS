@@ -11,5 +11,6 @@ namespace Server.Repository
         Notification INotificationRepo.DeleteNotification(Notification Notification) => NotificationManagement.Instance.DeleteNotification(Notification);
         IEnumerable<Notification> INotificationRepo.GetNotifications(string courseId) => NotificationManagement.Instance.GetNotifications(courseId);
         Notification INotificationRepo.GetNotificationById(int? id) => NotificationManagement.Instance.GetNotificationById(id);
+        Notification INotificationRepo.GetNotificationByTopicId(string? accountId, string? courseid) => NotificationManagement.Instance.GetNotificationByTopicId(accountId, courseid);
     }
 }
