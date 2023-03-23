@@ -107,5 +107,14 @@ namespace Server.Controllers
 
             return Ok();
         }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpPost]
+        public IActionResult UpdateMark(int submissionId, float mark)
+        {
+            Submission submission = submissionRepo.GetSubmissionById(submissionId);
+
+            return Ok();
+        }
     }
 }

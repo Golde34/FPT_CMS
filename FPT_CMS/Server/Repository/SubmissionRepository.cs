@@ -10,5 +10,7 @@ namespace Server.Repository
         public Submission GetExactSubmission(int topicId, int studentId) => SubmissionManagement.Instance.GetExactSubmission(topicId, studentId);
         public Submission DelteSubmission(int submissionId) => SubmissionManagement.Instance.DeleteSubmission(submissionId);
         public List<Submission> GetSubmissionsOfTopic(int topicId) => SubmissionManagement.Instance.GetSubmissionsOfTopic(topicId);
+
+        public Submission GetSubmissionById(int submissionId) => SubmissionManagement.Instance.GetSubmissionById(submissionId);
     }
 }
