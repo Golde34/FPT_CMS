@@ -1,4 +1,5 @@
-﻿using Server.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Entity;
 
 namespace Server.DAO
 {
@@ -67,6 +68,29 @@ namespace Server.DAO
                 else
                 {
                     throw new Exception("The Topic has already existed");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public Topic UpdateTopic(Topic topic)
+        {
+            try
+            {
+                Topic _topic = GetTopicById(topic.Id);
+                if (_topic != null)
+                {
+                    var context = new AppDBContext();
+                    context.Entry<Topic>(topic).State = EntityState.Modified;
+                    context.SaveChanges();
+                    return topic;
+                }
+                else
+                {
+                    throw new Exception("The topic is not exist.");
                 }
             }
             catch (Exception e)

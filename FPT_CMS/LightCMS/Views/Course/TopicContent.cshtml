@@ -118,12 +118,12 @@
 								<div class="card">
 									<img class="card-img-top" src="https://images02.vietnamworks.com//companyprofile/FPT-Education/en/image6.jpg" alt="Unsplash">
 									<div class="card-header">
-										<h5 class="card-title mb-0">@Model.Title</h5>
+										<h5 class="card-title mb-0" id="modelTitle">@Model.Title</h5>
 									</div>
 									<div class="card-body">
-										<p class="card-text">@Model.Requirement</p>
+										<p class="card-text" id="modelReq">@Model.Requirement</p>
 										<div class="d-flex justify-content-between">
-											<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
+											<a href="#" id="update-link" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-title="@Model.Title" data-requirement="@Model.Requirement" data-due="@Model.Due.ToString("yyyy-MM-dd");"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
 											<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmModal"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
 										</div>
 									</div>
@@ -184,7 +184,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								<button type="button" class="btn btn-primary">Update Topic</button>
+								<button type="button" id="btnUpdate" class="btn btn-primary" data-dismiss="modal">Update Topic</button>
 							</div>
 						</div>
 					</div>
@@ -230,6 +230,36 @@
 			$("#form-zip").css("display", "block");
 		});
 
+		$("#btnUpdate").click(function() {
+			var topic = {
+				Id: @Model.Id,
+				Title: $( "#topic-title" ).val(),
+				Requirement: $( "#topic-requirement" ).val(),
+				Due: $('#topic-due').val(),
+				CourseId: "@Model.CourseId"
+			}
+
+			console.log(topic);
+
+			$.ajax({
+				//prevent reload on ajax
+				url: "http://localhost:5195/api/Topic/UpdateTopic",
+				type: "PATCH",
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader("Authorization", "Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()");
+				},
+				data: JSON.stringify(topic),
+				contentType: "application/json",
+				success: function (data) {
+					$("#modelTitle").text(topic.Title);
+					$("#modelReq").text(topic.Requirement);
+				},
+				error: function (data) {
+					alert("Error while creating topic!!") ;   
+				}
+			});
+		});
+
 		$("#btnDelete").click(function() {
 			$.ajax({
 				//prevent reload on ajax
@@ -249,16 +279,18 @@
 		});
 	});
 </script>
-
 <script type="text/javascript">
-	$('#exampleModal').on('show.bs.modal', function (event) {
-		var button = $(event.relatedTarget) // Button that triggered the modal
-		var recipient = button.data('whatever') // Extract info from data-* attributes
-		// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-		// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-		var modal = $(this)
-		modal.find('.modal-title').text('Edit Topic')
-		modal.find('.modal-body input').val(recipient)
-	})
+	$(document).on("click", "#update-link", function () {
+		 var title = $(this).data('title');
+		 var requirement = $(this).data('requirement');
+		 var due = $(this).data('due');
+		 due = due.replace(';', '');
+
+		 console.log(due);
+
+		 $(".modal-body #topic-title").val(title);
+		 $(".modal-body #topic-requirement").val(requirement);
+		 $(".modal-body #topic-due").val(due);
+	});
 </script>
 

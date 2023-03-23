@@ -10,5 +10,7 @@ namespace Server.Repository
         public Topic GetTopicById(int topicId) => TopicManagement.Instance.GetTopicById(topicId);
         public Topic AddTopic(Topic topic) => TopicManagement.Instance.AddTopic(topic);
         public Topic DeleteTopic(int topicId) => TopicManagement.Instance.DeleteTopic(topicId);
+
+        public Topic UpdateTopic(Topic topic) => TopicManagement.Instance.UpdateTopic(topic);
     }
 }

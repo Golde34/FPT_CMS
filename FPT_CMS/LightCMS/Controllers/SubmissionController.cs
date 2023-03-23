@@ -25,6 +25,8 @@ namespace LightCMS.Controllers
             string strSubmissions = await jwtService.GetObjects("http://localhost:5195/api/Submission/GetSubmissions/" + topicId, this.client);
             IEnumerable<SubmissionDTO> submissions = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubmissionDTO>>(strSubmissions);
 
+            ViewData["topicId"] = topicId;
+
             return View(submissions);
         }
 	}

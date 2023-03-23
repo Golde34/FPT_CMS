@@ -35,6 +35,21 @@ namespace Server.Controllers
             return Ok(result);
         }
 
+        [HttpPatch]
+        public IActionResult UpdateTopic(Topic topic)
+        {
+            Topic t = topicRepo.GetTopicById(topic.Id);
+
+            if(t == null)
+            {
+                return NotFound();
+            }
+
+            topicRepo.UpdateTopic(topic);
+
+            return Ok();
+        }
+
         [HttpDelete("{topicId}")]
         public IActionResult DeleteTopic(int topicId)
         {

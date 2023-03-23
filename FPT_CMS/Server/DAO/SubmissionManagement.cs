@@ -1,4 +1,5 @@
-﻿using Server.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Entity;
 using Server.Repository;
 using Server.Repository.@interface;
 
@@ -84,6 +85,29 @@ namespace Server.DAO
                 else
                 {
                     throw new Exception("The Submission has already existed");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public Submission UpdateSubmission(Submission submission)
+        {
+            try
+            {
+                Submission _submission = GetSubmissionById(submission.Id);
+                if (_submission != null)
+                {
+                    var context = new AppDBContext();
+                    context.Entry<Submission>(submission).State = EntityState.Modified;
+                    context.SaveChanges();
+                    return submission;
+                }
+                else
+                {
+                    throw new Exception("The submission is not exist.");
                 }
             }
             catch (Exception e)

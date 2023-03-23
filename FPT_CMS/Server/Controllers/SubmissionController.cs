@@ -114,6 +114,10 @@ namespace Server.Controllers
         {
             Submission submission = submissionRepo.GetSubmissionById(submissionId);
 
+            submission.Mark = mark;
+
+            submissionRepo.UpdateSubmission(submission);
+
             return Ok();
         }
     }

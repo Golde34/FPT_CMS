@@ -7,6 +7,7 @@ namespace Server.Repository.@interface
         IEnumerable<Topic> GetTopicsByCourseId(string courseId);
         Topic GetTopicById(int topicId);
         Topic AddTopic(Topic topic);
+        Topic UpdateTopic(Topic topic);
         Topic DeleteTopic(int topicId);
     }
 }
