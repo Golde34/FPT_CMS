@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.DAO;
 using Server.Entity;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-using System.Xml.Linq;
-using Server.DTO;
 using Microsoft.Extensions.Primitives;
 using Server.Repository.@interface;
 using System.IdentityModel.Tokens.Jwt;
@@ -73,7 +70,7 @@ public class NotificationController : Controller
             Notification notification = new Notification
             {
                 Text = Text,
-                UploadFile = path,
+                UploadFile = file.FileName,
                 CourseId = CourseId,
                 AccountId = AccountId
             };

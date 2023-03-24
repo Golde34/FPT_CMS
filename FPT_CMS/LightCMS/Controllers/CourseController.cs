@@ -99,10 +99,10 @@ namespace LightCMS.Controllers
 			jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
+
 			//Get Notifications
 			string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + id), this.client);
 			IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
-            //IEnumerable<SubmissionDTO> submissions = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubmissionDTO>>(strSubmissions);
             ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
@@ -112,6 +112,9 @@ namespace LightCMS.Controllers
                 commentsDict.Add(noti.NotificationId, comments); 
             }
             ViewBag.Comment = commentsDict;
+
+            string strWebRootPath = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"), this.client);
+            ViewBag.WebRootPath = strWebRootPath;
 
             ViewBag.CourseId = id;
             return View();

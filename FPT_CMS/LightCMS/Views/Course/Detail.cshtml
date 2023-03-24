@@ -9,6 +9,7 @@
     {
         accountId = Context.Session.GetString("AccountId");
     }
+    var webRootPath = ViewBag.WebRootPath + "//Notification//";
 }
 
 <body>
@@ -53,6 +54,21 @@
                                                 <div class="p-2 mt-1">
                                                     @notification.Text
                                                 </div>
+                                                @if (notification.UploadFile.Equals("") || notification.UploadFile == null)
+                                                {
+                                                    <div></div>
+                                                } 
+                                                else
+                                                {
+                                                    <div class="p-2 mt-1">
+                                                                Upload file
+                                                        <div>
+                                                            <a href="@webRootPath+@notification.UploadFile">
+                                                                @notification.UploadFile
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                         <hr />
