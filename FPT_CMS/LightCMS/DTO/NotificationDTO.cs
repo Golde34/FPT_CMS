@@ -8,7 +8,6 @@ namespace LightCMS.DTO
 		public int NotificationId { get; set; }
 		[Required]
 		public string Text { get; set; }
-		[AllowNull]
 		public string UploadFile { get; set; }
 		[Required]
 		public string CourseId { get; set; }

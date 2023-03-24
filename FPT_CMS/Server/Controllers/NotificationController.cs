@@ -42,7 +42,7 @@ public class NotificationController : Controller
         return _Notifications;
     }
 
-    public async Task<IActionResult> AddNotification([FromForm] IFormFile UploadFile, [FromForm] string CourseId, [FromForm] string AccountId, [FromForm] string Text)
+    public async Task<IActionResult> AddNotification([FromForm] IFormFile file, [FromForm] string CourseId, [FromForm] string AccountId, [FromForm] string Text)
     {
         var webRootPath = _env.WebRootPath;
         if (!Directory.Exists(webRootPath + "\\Notification\\"))
@@ -61,12 +61,12 @@ public class NotificationController : Controller
         var id = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
 
         int notificationListLength = notificationRepo.GetNotifications(CourseId).ToList().Count()+1;
-        if (UploadFile != null)
+        if (file != null)
         {
-            string path = webRootPath + "\\Notification\\" + UploadFile.FileName;
+            string path = webRootPath + "\\Notification\\" + file.FileName;
             using (FileStream fileStream = System.IO.File.Create(path))
             {
-                UploadFile.CopyTo(fileStream);
+                file.CopyTo(fileStream);
                 fileStream.Flush();
             }
 

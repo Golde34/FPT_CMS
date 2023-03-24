@@ -124,7 +124,7 @@ namespace LightCMS.Controllers
             string strData;
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-            if (notificationDTO.UploadFile != null && notificationDTO.UploadFile.Length > 0)
+            if (file != null && file.Length > 0)
             {
                 using (var client = new HttpClient())
                 {
@@ -137,10 +137,9 @@ namespace LightCMS.Controllers
                             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
                         }
 
-                        notificationDTO.UploadFile = file.FileName;
                         // Add file content
                         var fileContent = new StreamContent(file.OpenReadStream());
-                        content.Add(fileContent, "UploadFile", file.FileName);
+                        content.Add(fileContent, "file", file.FileName);
 
                         // Add other parameters
                         content.Add(new StringContent(notificationDTO.AccountId), "AccountId");
@@ -162,7 +161,6 @@ namespace LightCMS.Controllers
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
             //Get Notifications
             string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + notificationDTO.CourseId), this.client);
-            var notiJson = JsonConvert.DeserializeObject<string>(strNotification);
             IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
             ViewBag.Notification = notifications;
 
