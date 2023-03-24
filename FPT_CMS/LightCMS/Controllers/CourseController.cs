@@ -179,5 +179,46 @@ namespace LightCMS.Controllers
 
             return View("Detail");
         }
+
+        public async Task<IActionResult> AddComment([FromForm] string text, [FromForm] string accountId, [FromForm] int notificationId, [FromForm] string courseId)
+        {
+            HttpResponseMessage response;
+            string strData;
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+            CommentDTO commentDTO = new CommentDTO
+            {
+                AccountId = accountId,
+                NotificationID = notificationId,
+                Text = text
+            };
+            if (ModelState.IsValid)
+            {
+                strData = Newtonsoft.Json.JsonConvert.SerializeObject(commentDTO);
+                HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
+                response = await client.PostAsync("http://localhost:5195/api/Notification/AddComment", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
+            //Get Notifications
+            string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + courseId), this.client);
+            IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+            ViewBag.Notification = notifications;
+
+            foreach (var noti in notifications)
+            {
+                string strComment = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId), this.client);
+                dynamic? comments = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
+                commentsDict.Add(noti.NotificationId, comments);
+            }
+            ViewBag.Comment = commentsDict;
+
+            ViewBag.CourseId = notifications.First().CourseId;
+
+            return View("Detail");
+        }
     }
 }

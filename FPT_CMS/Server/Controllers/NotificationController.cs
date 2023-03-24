@@ -6,6 +6,7 @@ using Microsoft.Extensions.Primitives;
 using Server.Repository.@interface;
 using System.IdentityModel.Tokens.Jwt;
 using Server.Repository;
+using Server.DTO;
 
 [Authorize]
 [Route("api/[controller]/[action]")]
@@ -108,5 +109,18 @@ public class NotificationController : Controller
         }
 
         return _Comments;
+    }
+
+    public async Task<IActionResult> AddComment(CommentDTO commentDTO)
+    {
+        var _courseManagement = new CommentManagement();
+        Comment comment = new Comment
+        {
+            Text = commentDTO.Text,
+            AccountId = commentDTO.AccountId,
+            NotificationID = commentDTO.NotificationID
+        };
+        _courseManagement.AddComment(comment);
+        return Ok();
     }
 }
