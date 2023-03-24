@@ -27,7 +27,7 @@
             {
                 <li class="nav-item dropdown">
                     <a class="nav-link d-none d-sm-inline-block" href="#">
-                        <img src="~/img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Charles Hall" /> <span class="text-dark">Charles Hall</span>
+                        <img src="~/img/avatars/avatar-default.png" class="avatar img-fluid rounded me-1" alt="Charles Hall" /> <span class="text-dark">@Context.Session.GetString("Username")</span>
                     </a>
                 </li>
             }

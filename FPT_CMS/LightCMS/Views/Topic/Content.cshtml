@@ -1,0 +1,302 @@
+﻿@using LightCMS.DTO;
+@model TopicDTO
+
+@{
+	ViewData["Title"] = "Topic Content";
+	var role = "";
+	if (Context.Session.GetString("Role") != null)
+	{
+		role = Context.Session.GetString("Role");
+	}
+
+	var today = DateTime.Today;
+}
+
+<body>
+	<div class="wrapper">
+
+		<div id="sb-partialDiv">
+			@await Component.InvokeAsync("Sidebar", new {})
+		</div>
+
+		<div class="main">
+			<div id="sb-partialDiv">
+				@await Component.InvokeAsync("Navbar", new {})
+			</div>
+
+			@if (role.Equals("Student"))
+			{
+					<main class="content">
+						<div class="container-fluid p-0 col-lg-8">
+
+							<div class="mb-3">
+								<h1 class="h3 d-inline align-middle">Topic Content</h1>
+							</div>
+							<div class="row">
+								<div class="col-12">
+									<div class="card">
+										<img class="card-img-top" src="https://images02.vietnamworks.com//companyprofile/FPT-Education/en/image6.jpg" alt="Unsplash">
+										<div class="card-header">
+											<h5 class="card-title mb-0">Assignment 1</h5>
+										</div>
+										<div class="card-body">
+											<p class="card-text">Write a program that prints the numbers from 1 to 100. 
+												But for multiples of three print Fizz instead of the number and for the multiples of five print Buzz. 
+												For numbers which are multiples of both three and five print FizzBuzz.</p>
+										@if (today > Model.Due)
+										{
+													<p class="text-danger">Overdue</p>
+										}
+										else
+										{
+											if (ViewData["submission"] == null)
+											{
+															<button id="btnSubmit" class="btn btn-primary">Submit your work</button>
+											}
+											else
+											{
+												var submission = (SubmissionDTO)ViewData["submission"];
+												var paths = submission.URL.Split("\\");
+															<div>
+																<button class="btn btn-warning" data-toggle="modal" data-target="#confirmModal">Edit your work</button>
+													@paths[paths.Length-1]
+															</div>
+											}
+										}
+										</div>
+									</div>
+									<div id="form-zip" class="card" style="display: none">
+										<form method="post" enctype="multipart/form-data">
+											<div class="card-header">
+												<h5 class="card-title mb-0">Upload your zip file here</h5>
+											</div>
+											<div class="card-body" hidden>
+												<input name="topicId" type="text" value="@Model.Id" readonly/>
+											</div>
+											<div class="card-body">
+												<input name="name" type="text" placeholder="Name your file"/>
+											</div>
+											<div class="card-body">
+												<input name="file" type="file" accept=".rar" />
+											</div>
+											<div class="card-body">
+												<input type="submit" class="btn btn-success" value="Upload" />
+											</div>
+										</form>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</main>
+
+					<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-warning" id="btn-edit-submission" data-dismiss="modal">Yes, I want to edit Submission</button>
+								</div>
+							</div>
+						</div>
+					</div>
+			}
+
+			@if (role.Equals("Teacher"))
+			{
+					<main class="content">
+						<div class="container-fluid p-0 col-lg-10">
+
+							<div class="mb-3">
+								<h1 class="h3 d-inline align-middle">Topic Content</h1>
+							</div>
+							<div class="row">
+								<div class="col-md-8">
+									<div class="card">
+										<img class="card-img-top" src="https://images02.vietnamworks.com//companyprofile/FPT-Education/en/image6.jpg" alt="Unsplash">
+										<div class="card-header">
+											<h5 class="card-title mb-0" id="modelTitle">@Model.Title</h5>
+										</div>
+										<div class="card-body">
+											<p class="card-text" id="modelReq">@Model.Requirement</p>
+											<div class="d-flex justify-content-between">
+												<a href="#" id="update-link" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-title="@Model.Title" data-requirement="@Model.Requirement" data-due="@Model.Due.ToString("yyyy-MM-dd");"><i class="align-middle me-2" data-feather="edit"></i> <span class="align-middle">Edit</span></a>
+												<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmModal"><i class="align-middle me-2" data-feather="trash"></i> <span class="align-middle">Delete</span></a>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="card">
+										<div class="card-header">
+											<h5 class="card-title mb-0">Submission</h5>
+										</div>
+										<div class="card-body">
+										@if (ViewData["submissions"] != null)
+										{
+											var submissions = (List<SubmissionDTO>)ViewData["submissions"];
+													<p class="card-text">Number of Submission: @submissions.Count</p>
+													<div>
+														<a href="#" class="card-link"></a>
+														<a asp-controller="Submission" asp-action="ShowAll" asp-route-topicId="@Model.Id">Show all submissions and grade them</a><br/>
+													</div>
+										}
+										else
+										{
+													<p class="card-text">Number of Submission: 0</p>
+													<div>
+														<a href="#" class="card-link">No Submissions Available</a><br/>
+													</div>
+										}
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</main>
+
+					<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">Topic</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+								<form>
+									<div class="form-group">
+										<label for="topic-title" class="col-form-label">Title:</label>
+										<input type="text" class="form-control" id="topic-title">
+									</div>
+									<div class="form-group">
+										<label for="topic-requirement" class="col-form-label">Requirement:</label>
+										<textarea rows="10" class="form-control" id="topic-requirement"></textarea>
+									</div>
+									<div class="form-group">
+										<label for="topic-due" class="col-form-label">Due Date:</label>
+										<input type="date" class="form-control" id="topic-due">
+									</div>
+								</form>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									<button type="button" id="btnUpdate" class="btn btn-primary" data-dismiss="modal">Update Topic</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-danger" id="btnDelete">Delete Topic</button>
+								</div>
+							</div>
+						</div>
+					</div>
+			}
+
+			<div id="sb-partialDiv">
+				@await Component.InvokeAsync("Footer", new {})
+			</div>
+		</div>
+	</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="~/js/app.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#btnSubmit").click(function() {
+			$("#form-zip").css("display", "block");
+		});
+
+		$("#btn-edit-submission").click(function() {
+			$("#form-zip").css("display", "block");
+		});
+
+		$("#btnUpdate").click(function() {
+			var topic = {
+				Id: @Model.Id,
+				Title: $( "#topic-title" ).val(),
+				Requirement: $( "#topic-requirement" ).val(),
+				Due: $('#topic-due').val(),
+				CourseId: "@Model.CourseId"
+			}
+
+			console.log(topic);
+
+			$.ajax({
+				//prevent reload on ajax
+				url: "http://localhost:5195/api/Topic/UpdateTopic",
+				type: "PATCH",
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader("Authorization", "Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()");
+				},
+				data: JSON.stringify(topic),
+				contentType: "application/json",
+				success: function (data) {
+					$("#modelTitle").text(topic.Title);
+					$("#modelReq").text(topic.Requirement);
+				},
+				error: function (data) {
+					alert("Error while creating topic!!") ;   
+				}
+			});
+		});
+
+		$("#btnDelete").click(function() {
+			$.ajax({
+				//prevent reload on ajax
+				url: "http://localhost:5195/api/Topic/DeleteTopic/"+@Model.Id.ToString(),
+				type: "DELETE",
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader("Authorization", "Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()");
+				},
+				contentType: "application/json",
+				success: function (data) {
+					location.href = "http://localhost:5259/Topic/Index?courseId="+@Model.CourseId
+				},
+				error: function (data) {
+					alert("Error while deleting topic!!") ;   
+				}
+			});
+		});
+	});
+</script>
+<script type="text/javascript">
+	$(document).on("click", "#update-link", function () {
+		 var title = $(this).data('title');
+		 var requirement = $(this).data('requirement');
+		 var due = $(this).data('due');
+		 due = due.replace(';', '');
+
+		 console.log(due);
+
+		 $(".modal-body #topic-title").val(title);
+		 $(".modal-body #topic-requirement").val(requirement);
+		 $(".modal-body #topic-due").val(due);
+	});
+</script>
+

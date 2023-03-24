@@ -9,5 +9,6 @@ namespace Server.Repository.@interface
         Teacher DeleteTeacher(Teacher Teacher);
         IEnumerable<Teacher> GetTeachers();
         Teacher GetTeacherById(string? id);
+        Teacher GetTeacherByAccountId(string? id);
     }
 }

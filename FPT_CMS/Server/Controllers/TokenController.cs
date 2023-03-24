@@ -18,6 +18,8 @@ namespace Server.Controllers
     {
         public IConfiguration _configuration;
         private IAccountRepo _accountRepo = new AccountRepository();
+        private IStudentRepo _studentRepo = new StudentRepository();
+        private ITeacherRepo _teacherRepo = new TeacherRepository();
 
         public TokenController(IConfiguration config)
         {
@@ -33,6 +35,20 @@ namespace Server.Controllers
 
                 if (acc != null)
                 {
+                    var name = "";
+                    if (acc.Role.Equals("Student"))
+                    {
+                        Student student = _studentRepo.GetStudentByAccountId(acc.Id);
+                        if(student == null) return BadRequest("No data exists");
+                        name = student.StudentName;
+                    }
+                    else
+                    {
+                        Teacher teacher = _teacherRepo.GetTeacherByAccountId(acc.Id);
+                        if (teacher == null) return BadRequest("No data exists");
+                        name = teacher.Name;
+                    }
+
                     #region Tạo token
 
                     try
@@ -44,7 +60,7 @@ namespace Server.Controllers
                             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                             new Claim(ClaimTypes.Role, Enum.GetName(acc.Role)),
                             new Claim("Id", acc.Id),
-                            new Claim("Name", acc.Username)
+                            new Claim("Name", name)
                         };
 
                         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

@@ -11,5 +11,7 @@ namespace Server.Repository
         Teacher ITeacherRepo.DeleteTeacher(Teacher Teacher) => TeacherManagement.Instance.DeleteTeacher(Teacher);
         IEnumerable<Teacher> ITeacherRepo.GetTeachers() => TeacherManagement.Instance.GetTeachers();
         Teacher ITeacherRepo.GetTeacherById(string? id) => TeacherManagement.Instance.GetTeacherById(id);
+
+        public Teacher GetTeacherByAccountId(string? id) => TeacherManagement.Instance.GetTeacherByAccountId(id);
     }
 }

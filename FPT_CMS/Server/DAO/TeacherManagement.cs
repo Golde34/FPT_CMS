@@ -121,5 +121,21 @@ namespace Server.DAO
             }
             return Teacher;
         }
+
+        public Teacher GetTeacherByAccountId(string id)
+        {
+            Teacher teacher;
+            try
+            {
+                var _dbContext = new AppDBContext();
+                teacher = _dbContext.Teachers
+                    .FirstOrDefault(a => a.AccountId.Equals(id));
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return teacher;
+        }
     }
 }
