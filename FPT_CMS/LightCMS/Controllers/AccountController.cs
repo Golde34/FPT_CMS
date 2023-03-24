@@ -1,4 +1,5 @@
 ﻿using LightCMS.DTO;
+using LightCMS.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace LightCMS.Controllers
     {
         private readonly HttpClient client = null;
         private string CmsApiUrl = "";
+        private BaseService jwtService = new BaseService();
 
         public AccountController()
         {
@@ -71,12 +73,50 @@ namespace LightCMS.Controllers
             return View(accountDTO);
         }
 
+
+        // Logout
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            if (HttpContext.Session.GetString("isLoggedIn")==null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            {
+                    return RedirectToAction("Login", "Account");
+            }
+
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            if (HttpContext.Session.GetString("Role").Equals("Teacher"))
+            {
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Teacher/Detail");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                string strData = await response.Content.ReadAsStringAsync();
+                dynamic information = Newtonsoft.Json.JsonConvert.DeserializeObject<TeacherDTO>(strData);
+                ViewData["teacher"] = information;
+            }
+            else
+            {
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Student/Detail");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                string strData = await response.Content.ReadAsStringAsync();
+                dynamic information = Newtonsoft.Json.JsonConvert.DeserializeObject<StudentDTO>(strData);
+                ViewData["student"] = information;
+            }
+            return View();
+        }
+
         // Logout
         [HttpGet]
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("JWT");
-            HttpContext.Session.Remove("isLoggedIn");
+            HttpContext.Session.Remove("Role");
+            HttpContext.Session.Remove("AccountId");
+            HttpContext.Session.Remove("Username");
             HttpContext.Session.Remove("JWT");
             HttpContext.Session.Remove("isLoggedIn");
             return RedirectToAction("Login", "Account");

@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Server.DTO;
 using Server.Repository;
 using Server.Repository.@interface;
+using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Server.Controllers
 {
@@ -90,6 +92,38 @@ namespace Server.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPatch]
+        [Authorize]
+        public IActionResult ChangePassword(PasswordDTO passwordDTO)
+        {
+            // Decode the token and get the role of account
+            StringValues values;
+            Request.Headers.TryGetValue("Authorization", out values);
+            var token = values.ToString();
+            string[] tokens = token.Split(" ");
+
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
+            var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+
+            Account account = _accountRepo.GetAccountById(accountId.ToString());
+            if(account == null)
+            {
+                return NotFound();
+            }
+
+            if (!passwordDTO.Curpass.Equals(account.Password) || !passwordDTO.Pass.Equals(passwordDTO.Repass))
+            {
+                return Conflict();
+            }
+
+            account.Password = passwordDTO.Pass;
+            _accountRepo.UpdateAccount(account);
+
+            return Ok();
         }
     }
 }
