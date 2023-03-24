@@ -22,5 +22,6 @@ namespace Server.Entity
         public virtual Account? Account { get; set; }
         public virtual ICollection<Grade> Grades { get; }
         public virtual ICollection<Submission> Submissions { get; set; }
+        public virtual ICollection<Enrollment> Enrollments { get; set; }
     }
 }

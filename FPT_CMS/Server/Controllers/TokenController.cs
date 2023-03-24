@@ -36,7 +36,7 @@ namespace Server.Controllers
                 if (acc != null)
                 {
                     var name = "";
-                    if (acc.Role.Equals("Student"))
+                    if (acc.Role == Entity.Enum.Roles.Student)
                     {
                         Student student = _studentRepo.GetStudentByAccountId(acc.Id);
                         if(student == null) return BadRequest("No data exists");

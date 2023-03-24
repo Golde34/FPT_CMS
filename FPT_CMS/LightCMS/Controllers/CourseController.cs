@@ -38,6 +38,36 @@ namespace LightCMS.Controllers
             return View(courses);
         }
 
+        public async Task<IActionResult> RegisteredCourse()
+        {
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            HttpResponseMessage response = await client.GetAsync(CmsApiUrl + "/GetRegisteredCourses");
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic courses = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
+
+            return View(courses);
+        }
+
+        public async Task<IActionResult> ManagedCourse()
+        {
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            HttpResponseMessage response = await client.GetAsync(CmsApiUrl + "/GetManagedCourses");
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            dynamic courses = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
+
+            return View(courses);
+        }
+
         public async Task<IActionResult> Add()
         {
 			jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);

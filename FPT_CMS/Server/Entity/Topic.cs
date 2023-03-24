@@ -1,4 +1,6 @@
-﻿namespace Server.Entity
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Server.Entity
 {
     public class Topic
     {
@@ -6,6 +8,7 @@
         {
             Submissions = new List<Submission>();
         }
+
         public int Id { get; set; }
         public string Title { get; set; }
         public string Requirement { get; set; }

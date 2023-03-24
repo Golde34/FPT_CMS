@@ -27,6 +27,7 @@ namespace Server.Entity
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -69,7 +70,13 @@ namespace Server.Entity
             builder.Entity<Comment>(entity =>
             {
                 entity.HasOne(d => d.Notification).WithMany(p => p.Comments).HasForeignKey(d => d.NotificationID);
-                entity.HasOne(d => d.Account).WithMany(p => p.Comments).HasForeignKey(d => d.AccountId).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.Account).WithMany(p => p.Comments).HasForeignKey(d => d.AccountId);
+            });
+
+            builder.Entity<Enrollment>(entity =>
+            {
+                entity.HasOne(d => d.Student).WithMany(p => p.Enrollments).HasForeignKey(d => d.StudentId);
+                entity.HasOne(d => d.Course).WithMany(p => p.Enrollments).HasForeignKey(d => d.CourseId);
             });
         }
 

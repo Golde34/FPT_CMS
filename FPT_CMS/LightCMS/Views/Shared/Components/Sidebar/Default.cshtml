@@ -7,6 +7,12 @@
     {
         isLogggedIn = Context.Session.GetString("isLoggedIn").Equals("true");
     }
+
+	var role = "";
+	if (Context.Session.GetString("Role") != null)
+	{
+		role = Context.Session.GetString("Role");
+	}
 }
 
 <nav id="sidebar" class="sidebar js-sidebar">
@@ -26,9 +32,34 @@
 				</a>
 			</li>
 			@if(isLogggedIn){
+
+				@if(role.Equals("Student")){
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="/Course">
+							<i class="align-middle" data-feather="grid"></i> <span class="align-middle">Dashboard</span>
+						</a>
+					</li>
+				
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="/Course/RegisteredCourse">
+							<i class="align-middle" data-feather="book"></i> <span class="align-middle">Your Registered Course</span>
+						</a>
+					</li>
+				}
+
+				@if (role.Equals("Teacher"))
+				{
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="/Course/ManagedCourse">
+							<i class="align-middle" data-feather="book"></i> <span class="align-middle">Your Course</span>
+						</a>
+					</li>
+				}
+
 				<li class="sidebar-item">
-					<a class="sidebar-link" href="/Course">
-						<i class="align-middle" data-feather="book"></i> <span class="align-middle">Dashboard</span>
+					<a class="sidebar-link" href="pages-profile.html">
+						<i class="align-middle" data-feather="user"></i> <span class="align-middle">Profile</span>
 					</a>
 				</li>
 
