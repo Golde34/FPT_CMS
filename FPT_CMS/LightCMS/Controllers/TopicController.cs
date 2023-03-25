@@ -22,6 +22,12 @@ namespace LightCMS.Controllers
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
+            HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + courseId);
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicsByCourseId/" + courseId, this.client);
             IEnumerable<TopicDTO> topics = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<TopicDTO>>(strTopic);
 
@@ -35,6 +41,12 @@ namespace LightCMS.Controllers
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
+            HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Topic/IsEnrolledIn/"+topicId);
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicById/" + topicId, this.client);
             dynamic topic = Newtonsoft.Json.JsonConvert.DeserializeObject<TopicDTO>(strTopic);
 
@@ -44,7 +56,7 @@ namespace LightCMS.Controllers
                 if (strSubmission != null)
                 {
                     dynamic submission = Newtonsoft.Json.JsonConvert.DeserializeObject<SubmissionDTO>(strSubmission);
-                    ViewData["submission"] = submission;
+                    if(submission.Id != 0) ViewData["submission"] = submission;
                 }
             }
 

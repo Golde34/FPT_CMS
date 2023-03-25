@@ -8,5 +8,7 @@ namespace Server.Repository.@interface
         Enrollment GetEnrollmentById(int? id);
         IEnumerable<Enrollment> GetEnrollmentsByStudentId(int? studentId);
         IEnumerable<Enrollment> GetEnrollmentsByCourseId(string? courseId);
+        Enrollment AddEnrollment(Enrollment enrollment);
+        Enrollment DeleteEnrollment(Enrollment enrollment);
     }
 }

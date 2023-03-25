@@ -20,18 +20,28 @@
 
                     <div class="row d-flex justify-content-between mb-2">
                         <h1 class="h3 mb-3 w-auto">All <strong>Available Courses</strong></h1>
-                        <div class="w-auto">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="cardV" checked>
-                                <label class="form-check-label" for="flexRadioDefault1" id="cardLabel">
-                                    Card View
-                                </label>
+                        <div class="row d-flex justify-content-end">
+                            <div class="input-group w-auto">
+                                <form method="post">
+                                    <div class="row d-flex">
+                                        <input type="search" class="form-control w-auto" name="query" placeholder="Enter course name"/>
+                                        <input type="submit" class="form-control w-auto btn btn-primary"/>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="listV">
-                                <label class="form-check-label" for="flexRadioDefault2" id="listLabel">
-                                    List View
-                                </label>
+                            <div class="w-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="cardV" checked>
+                                    <label class="form-check-label" for="flexRadioDefault1" id="cardLabel">
+                                        Card View
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="listV">
+                                    <label class="form-check-label" for="flexRadioDefault2" id="listLabel">
+                                        List View
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -52,7 +62,7 @@
 
                                                         <div class="col-auto">
                                                             <div class="stat text-primary">
-                                                                <i class="align-middle" data-feather="shopping-cart"></i>
+                                                                <a href="/Course/Enroll?courseId=@course.CourseId"><i class="align-middle" data-feather="plus-circle"></i></a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -84,8 +94,6 @@
                                         <tr>
                                             <th>Name</th>
                                             <th class="d-none d-xl-table-cell">Slot</th>
-                                            <th>Status</th>
-                                            <th class="d-none d-md-table-cell">Assignee</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -94,10 +102,6 @@
                                             <tr>
                                                 <td><a href="/Course/Detail/@course.CourseId">@course.CourseName</a></td>
                                                 <td class="d-none d-xl-table-cell">Slot @course.Slot</td>
-                                                <td>
-                                                    <span class="badge bg-success">Done</span>
-                                                </td>
-                                                <td class="d-none d-md-table-cell">Vanessa Tucker</td>
                                             </tr>
                                         }
                                     </tbody>

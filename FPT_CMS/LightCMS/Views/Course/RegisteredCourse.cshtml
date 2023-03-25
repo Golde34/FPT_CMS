@@ -52,7 +52,7 @@
 
                                                         <div class="col-auto">
                                                             <div class="stat text-primary">
-                                                                <i class="align-middle" data-feather="shopping-cart"></i>
+                                                                <a href="/Course/Unenroll?courseId=@course.CourseId"><i class="align-middle me-2" data-feather="minus-circle"></i></a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -84,8 +84,6 @@
                                         <tr>
                                             <th>Name</th>
                                             <th class="d-none d-xl-table-cell">Slot</th>
-                                            <th>Status</th>
-                                            <th class="d-none d-md-table-cell">Assignee</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -94,10 +92,6 @@
                                             <tr>
                                                 <td><a href="/Course/Detail/@course.CourseId">@course.CourseName</a></td>
                                                 <td class="d-none d-xl-table-cell">Slot @course.Slot</td>
-                                                <td>
-                                                    <span class="badge bg-success">Done</span>
-                                                </td>
-                                                <td class="d-none d-md-table-cell">Vanessa Tucker</td>
                                             </tr>
                                         }
                                     </tbody>

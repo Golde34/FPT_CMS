@@ -38,6 +38,22 @@ namespace LightCMS.Controllers
             return View(courses);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Index(string query)
+        {
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            HttpResponseMessage response = await client.GetAsync(CmsApiUrl + "/GetCourses");
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            string strData = await response.Content.ReadAsStringAsync();
+            List<CourseDTO> courses = (List<CourseDTO>)Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
+
+            return View(courses.Where(c => c.CourseName.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList());
+        }
+
         public async Task<IActionResult> RegisteredCourse()
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
@@ -123,10 +139,68 @@ namespace LightCMS.Controllers
             return View(courseDTO);
         }
 
-        //Course Detail
-		public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Enroll(string courseId)
         {
-			jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            string strData = JsonConvert.SerializeObject(new
+            {
+                id = courseId
+            });
+            HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync("http://localhost:5195/api/Enrollments/AddEnroll", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("RegisteredCourse");
+            }
+
+            return RedirectToAction("Detail", new { id = courseId });
+        }
+
+        public async Task<IActionResult> Unenroll(string courseId)
+        {
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+            HttpResponseMessage response = await client.DeleteAsync("http://localhost:5195/api/Enrollments/DeleteEnroll?courseId="+courseId);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return RedirectToAction("RegisteredCourse");
+        }
+
+        //Course Detail
+        public async Task<IActionResult> Detail(int id)
+        {
+            if (HttpContext.Session.GetString("isLoggedIn") == null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+
+            if (HttpContext.Session.GetString("Role").Equals("Teacher"))
+            {
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + id);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            else
+            {
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + id);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            
 
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
 

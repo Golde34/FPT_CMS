@@ -80,7 +80,7 @@ namespace LightCMS.Controllers
         {
             if (HttpContext.Session.GetString("isLoggedIn")==null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
             {
-                    return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Account");
             }
 
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);

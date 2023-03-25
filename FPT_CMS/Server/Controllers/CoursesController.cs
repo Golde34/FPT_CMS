@@ -25,6 +25,7 @@ namespace Server.Controllers
         private IEnrollmentRepo enrollmentRepo = new EnrollmentRepository();
 
         [HttpGet]
+        [Authorize(Roles = "Student")]
         public ActionResult<List<Course>> GetCourses()
         {
             // string? tokenParse = DecodeJwtToken.GetRoleFromToken(Request.Headers[HeaderNames.Authorization]);
