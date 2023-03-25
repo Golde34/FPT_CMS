@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Entity;
+using System.Linq;
 
 namespace Server.DAO
 {
@@ -98,8 +99,10 @@ namespace Server.DAO
             {
                 var context = new AppDBContext();
                 Notifications = context.Notifications
+                    .OrderByDescending(x => x.NotificationId)
                     .Include(a => a.Account)
-                    .Where(x => x.CourseId == courseId).ToList();
+                    .Where(x => x.CourseId == courseId)
+                    .ToList();
             }
             catch (Exception e)
             {
