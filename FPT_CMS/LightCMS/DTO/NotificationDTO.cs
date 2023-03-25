@@ -13,5 +13,6 @@ namespace LightCMS.DTO
 		public string CourseId { get; set; }
 		[Required]
 		public string AccountId { get; set; }
+		public string Username { get; set; }
 	}
 }

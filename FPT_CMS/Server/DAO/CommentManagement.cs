@@ -129,7 +129,7 @@ namespace Server.DAO
             {
                 var context = new AppDBContext();
                 Comments = context.Comments
-                    //.Include(a => a.Account)
+                    .Include(a => a.Account)
                     .Where(x => x.NotificationID == notificationId).ToList();
             }
             catch (Exception e)

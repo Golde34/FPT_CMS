@@ -97,7 +97,9 @@ namespace Server.DAO
             try
             {
                 var context = new AppDBContext();
-                Notifications = context.Notifications.Where(x => x.CourseId == courseId).ToList();
+                Notifications = context.Notifications
+                    .Include(a => a.Account)
+                    .Where(x => x.CourseId == courseId).ToList();
             }
             catch (Exception e)
             {

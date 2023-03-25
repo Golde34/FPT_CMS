@@ -132,13 +132,13 @@ namespace LightCMS.Controllers
 
 			//Get Notifications
 			string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + id), this.client);
-			IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+			IEnumerable<NotificationDTO> notifications = JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
             ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
             {
                 string strComment = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId), this.client);
-                dynamic? comments = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
+                dynamic? comments = JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
                 commentsDict.Add(noti.NotificationId, comments); 
             }
             ViewBag.Comment = commentsDict;
@@ -210,7 +210,7 @@ namespace LightCMS.Controllers
             return View("Detail");
         }
 
-        public async Task<IActionResult> AddComment([FromForm] string text, [FromForm] string accountId, [FromForm] int notificationId, [FromForm] string courseId)
+        public async Task<IActionResult> AddComment([FromForm] string text, [FromForm] string accountId, [FromForm] int notificationId, [FromForm] string usernameComment, [FromForm] string courseId)
         {
             HttpResponseMessage response;
             string strData;
@@ -219,7 +219,8 @@ namespace LightCMS.Controllers
             {
                 AccountId = accountId,
                 NotificationID = notificationId,
-                Text = text
+                Text = text,
+                Username = usernameComment
             };
             if (ModelState.IsValid)
             {

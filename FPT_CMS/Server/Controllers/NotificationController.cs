@@ -7,6 +7,7 @@ using Server.Repository.@interface;
 using System.IdentityModel.Tokens.Jwt;
 using Server.Repository;
 using Server.DTO;
+using Server.Entity.Enum;
 
 [Authorize]
 [Route("api/[controller]/[action]")]
@@ -15,6 +16,9 @@ public class NotificationController : Controller
 {
     private readonly IWebHostEnvironment _env;
     private INotificationRepo notificationRepo = new NotificationRepository();
+    private ICommentRepo commentRepo = new CommentRepository();
+    private ITeacherRepo teacherRepo = new TeacherRepository();
+    private IStudentRepo studentRepo = new StudentRepository();
 
     public NotificationController(IWebHostEnvironment env)
     {
@@ -23,14 +27,41 @@ public class NotificationController : Controller
 
     [HttpGet]
     [Route("{id}")]
-    public ActionResult<List<Notification>> GetNotifications(string id)
+    public ActionResult<List<NotificationDTO>> GetNotifications(string id)
     {
-        List<Notification> _Notifications;
-        string rootPath = _env.WebRootPath + "\\Notification\\";
+        List<NotificationDTO> _Notifications = new List<NotificationDTO>();
         try
         {
             var _NotificationManagement = new NotificationManagement();
-            _Notifications = _NotificationManagement.GetNotifications(id).ToList();
+            List<Notification> noti = _NotificationManagement.GetNotifications(id).ToList();
+            foreach (var n in noti)
+            {
+                if (n.Account.Role == Roles.Teacher)
+                {
+                    NotificationDTO notiDTO = new NotificationDTO
+                    {
+                        NotificationId = n.NotificationId,
+                        Text = n.Text,
+                        UploadFile = n.UploadFile,
+                        CourseId = n.CourseId,
+                        AccountId = n.AccountId,
+                        Username = teacherRepo.GetTeacherByAccountId(n.AccountId).Name,
+                    };
+                    _Notifications.Add(notiDTO);
+                } else if (n.Account.Role == Roles.Student)
+                {
+                    NotificationDTO notiDTO = new NotificationDTO
+                    {
+                        NotificationId = n.NotificationId,
+                        Text = n.Text,
+                        UploadFile = n.UploadFile,
+                        CourseId = n.CourseId,
+                        AccountId = n.AccountId,
+                        Username = studentRepo.GetStudentByAccountId(n.AccountId).StudentName,
+                    };
+                    _Notifications.Add(notiDTO);
+                }
+            }
         }
         catch (Exception e)
         {
@@ -94,33 +125,58 @@ public class NotificationController : Controller
     }
 
     [Route("{id}")]
-    public ActionResult<List<Comment>> GetComments(string id)
+    public ActionResult<List<CommentDTO>> GetComments(string id)
     {
-        List<Comment> _Comments;
+        List<CommentDTO> commentsDTO = new List<CommentDTO>();
         try
         {
             var _CommentManagement = new CommentManagement();
-            _Comments = (List<Comment>)_CommentManagement.GetCommentsByNotification(int.Parse(id));
-
+            var comments = (List<Comment>)_CommentManagement.GetCommentsByNotification(int.Parse(id));
+            foreach (var c in comments)
+            {
+                if (c.Account.Role == Roles.Teacher)
+                {
+                    CommentDTO commentDTO = new CommentDTO
+                    {
+                        Id = c.Id,
+                        AccountId = c.AccountId,
+                        NotificationID= c.NotificationID,
+                        Text = c.Text,
+                        Username = teacherRepo.GetTeacherByAccountId(c.AccountId).Name,
+                    };
+                    commentsDTO.Add(commentDTO);
+                }
+                else if (c.Account.Role == Roles.Student)
+                {
+                    CommentDTO commentDTO = new CommentDTO
+                    {
+                        Id = c.Id,
+                        AccountId = c.AccountId,
+                        NotificationID = c.NotificationID,
+                        Text = c.Text,
+                        Username = studentRepo.GetStudentByAccountId(c.AccountId).StudentName,
+                    };
+                    commentsDTO.Add(commentDTO);
+                }
+            }
         }
         catch (Exception e)
         {
             throw new Exception(e.Message);
         }
 
-        return _Comments;
+        return commentsDTO;
     }
 
     public async Task<IActionResult> AddComment(CommentDTO commentDTO)
     {
-        var _courseManagement = new CommentManagement();
         Comment comment = new Comment
         {
             Text = commentDTO.Text,
             AccountId = commentDTO.AccountId,
             NotificationID = commentDTO.NotificationID
         };
-        _courseManagement.AddComment(comment);
+        commentRepo.AddComment(comment);
         return Ok();
     }
 }

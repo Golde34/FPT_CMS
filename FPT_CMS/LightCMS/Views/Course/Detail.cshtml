@@ -5,9 +5,11 @@
 
     Dictionary<object, object> dict = ViewBag.Comment;
     var accountId = "";
+    var name = "";
     if (Context.Session.GetString("AccountId") != null)
     {
         accountId = Context.Session.GetString("AccountId");
+        name = Context.Session.GetString("Username");
     }
     var webRootPath = ViewBag.WebRootPath + "//Notification//";
 }
@@ -49,7 +51,7 @@
                                             <img src="~/img/avatars/avatar.jpg" width="36" height="36" class="rounded-circle me-2" alt="Charles Hall">
                                             <div class="flex-grow-1">
                                                 <small class="float-end text-navy">30m ago</small>
-                                                <strong>Charles Hall</strong>
+                                                <strong>@notification.Username</strong>
                                                 <small class="text-muted">Today 7:21 pm</small>
                                                 <div class="p-2 mt-1">
                                                     @notification.Text
@@ -84,7 +86,7 @@
                                                             <img src="~/img/avatars/avatar.jpg" width="36" height="36" class="rounded-circle me-2" alt="Charles Hall">
                                                             <div class="card flex-grow-1">
                                                                 <div class="m-1">
-                                                                    <strong>Charles Hall</strong>
+                                                                    <strong>@comment.Username</strong>
                                                                     <div class="p-2 mt-1" style="background-color: #F5F7FB">
                                                                     @comment.Text
                                                                     </div>
@@ -102,6 +104,7 @@
                                                 <input type="hidden" name="notificationId" value="@notification.NotificationId" />
                                                 <input type="hidden" name="accountId" value="@accountId" />
                                                 <input type="hidden" name="CourseId" value="@ViewBag.CourseId" />
+                                                <input type="hidden" name="usernameComment" value="@name" />
                                                 <div class="d-flex flex-start w-100">
                                                     <img class="rounded-circle shadow-1-strong me-3"
                                                         src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp" alt="avatar" width="40"
@@ -145,11 +148,12 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div>@accountId</div>
+
                         <form method="POST" asp-controller="Course" asp-action="AddNotification" enctype="multipart/form-data">
-                            <div class="modal-body">w
+                            <div class="modal-body">
                                 <input type="hidden" name="CourseId" value="@ViewBag.CourseId" />
                                 <input type="hidden" name="AccountId" value="@accountId" />
+                                <input type="hidden" name="Username" value="@name" />
                                 <input type="hidden" name="UploadFile" value="0" />
                                 <div class="form-group">
                                     <label asp-for="Text" class="control-form-label">Announce something here:</label>
