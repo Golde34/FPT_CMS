@@ -20,12 +20,30 @@ namespace LightCMS.Controllers
         //Course Topic
         public async Task<IActionResult> Index(string courseId)
         {
+            if (HttpContext.Session.GetString("isLoggedIn") == null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-            HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + courseId);
-            if (!response.IsSuccessStatusCode)
+            if (HttpContext.Session.GetString("Role").Equals("Teacher"))
             {
-                return RedirectToAction("Index", "Home");
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Teacher/IsManagedBy?courseId=" + courseId);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            else
+            {
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + courseId);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
             }
 
             string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicsByCourseId/" + courseId, this.client);
@@ -39,13 +57,31 @@ namespace LightCMS.Controllers
 
         public async Task<IActionResult> Content(int topicId)
         {
+            if (HttpContext.Session.GetString("isLoggedIn") == null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-            HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Topic/IsEnrolledIn/"+topicId);
-            if (!response.IsSuccessStatusCode)
+            if (HttpContext.Session.GetString("Role").Equals("Teacher"))
             {
-                return RedirectToAction("Index", "Home");
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Topic/IsManagedBy/" + topicId);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
+            else
+            {
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Topic/IsEnrolledIn/" + topicId);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            
 
             string strTopic = await jwtService.GetObjects("http://localhost:5195/api/Topic/GetTopicById/" + topicId, this.client);
             dynamic topic = Newtonsoft.Json.JsonConvert.DeserializeObject<TopicDTO>(strTopic);

@@ -14,6 +14,7 @@ namespace Server.Controllers
     public class TeacherController : Controller
     {
         private ITeacherRepo _teacherRepo = new TeacherRepository();
+        private ICourseRepo courseRepo = new CourseRepository();
 
         public IActionResult Index()
         {
@@ -37,6 +38,39 @@ namespace Server.Controllers
             if (teacher == null) return BadRequest("No data exists");
 
             return Ok(teacher);
+        }
+
+        public IActionResult IsManagedBy(string courseId)
+        {
+            // Decode the token and get the role of account
+            StringValues values;
+            Request.Headers.TryGetValue("Authorization", out values);
+            var token = values.ToString();
+            string[] tokens = token.Split(" ");
+
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
+            var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+
+            Teacher teacher = _teacherRepo.GetTeacherByAccountId(accountId);
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+
+            Course course = courseRepo.GetCourseById(courseId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            if (!course.TeacherId.Equals(teacher.Id))
+            {
+                return Conflict();
+            }
+
+            return Ok();
         }
     }
 }

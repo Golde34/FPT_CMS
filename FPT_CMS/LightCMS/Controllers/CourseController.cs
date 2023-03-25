@@ -183,7 +183,7 @@ namespace LightCMS.Controllers
 
             if (HttpContext.Session.GetString("Role").Equals("Teacher"))
             {
-                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + id);
+                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Teacher/IsManagedBy?courseId=" + id);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -199,8 +199,6 @@ namespace LightCMS.Controllers
                     return RedirectToAction("Index");
                 }
             }
-
-            
 
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
 

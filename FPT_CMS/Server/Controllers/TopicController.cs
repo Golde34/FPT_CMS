@@ -16,6 +16,7 @@ namespace Server.Controllers
     {
         public ITopicRepo topicRepo = new TopicRepository();
         private IStudentRepo studentRepo = new StudentRepository();
+        private ITeacherRepo _teacherRepo = new TeacherRepository();
         private ICourseRepo courseRepo = new CourseRepository();
         private IEnrollmentRepo enrollmentRepo = new EnrollmentRepository();
 
@@ -35,6 +36,7 @@ namespace Server.Controllers
         }
 
         [HttpGet("{topicId}")]
+        [Authorize(Roles = "Student")]
         public IActionResult IsEnrolledIn(int topicId)
         {
             Topic topic = topicRepo.GetTopicById(topicId);
@@ -67,6 +69,45 @@ namespace Server.Controllers
             Enrollment enrollment = enrollmentRepo.GetEnrollmentsByStudentId(student.Id).FirstOrDefault(e => e.CourseId.Equals(course.CourseId));
 
             if (enrollment == null)
+            {
+                return Conflict();
+            }
+
+            return Ok();
+        }
+
+        [HttpGet("{topicId}")]
+        [Authorize(Roles = "Teacher")]
+        public IActionResult IsManagedBy(int topicId)
+        {
+            Topic topic = topicRepo.GetTopicById(topicId);
+
+            string courseId = topic.CourseId;
+
+            // Decode the token and get the role of account
+            StringValues values;
+            Request.Headers.TryGetValue("Authorization", out values);
+            var token = values.ToString();
+            string[] tokens = token.Split(" ");
+
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
+            var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+
+            Teacher teacher = _teacherRepo.GetTeacherByAccountId(accountId);
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+
+            Course course = courseRepo.GetCourseById(courseId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            if (!course.TeacherId.Equals(teacher.Id))
             {
                 return Conflict();
             }
