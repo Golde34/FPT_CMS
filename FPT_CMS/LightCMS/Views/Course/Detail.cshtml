@@ -59,26 +59,26 @@
                                                     </div>
                                                     @if (notification.UploadFile.Equals("") || notification.UploadFile == null)
                                                     {
-                                                            <div></div>
+                                                        <div></div>
                                                     }
                                                     else
                                                     {
-                                                            <hr />
-                                                            <div class="p-2 mt-1">
-                                                                        Upload file
-                                                                    <a href="@webRootPath+@notification.UploadFile">
+                                                        <hr />
+                                                        <div class="p-2 mt-1">
+                                                            Upload file
+                                                            <a href="@webRootPath+@notification.UploadFile">
                                                                 @notification.UploadFile
-                                                                    </a>
-                                                            </div>
+                                                            </a>
+                                                        </div>
                                                     }
                                                 </div>
                                             </div>
                                             <hr />
                                             @if (dict[notification.NotificationId].Count > 0)
                                             {
-                                                    <div class="row">
-                                                            <button id="@notification.NotificationId" type="button" class="btn btn-light">Display Comment</button>
-                                                    </div>
+                                                <div class="row">
+                                                    <button id="@notification.NotificationId" type="button" class="btn btn-light">Display Comment</button>
+                                                </div>
                                             }
                                             <br />
                                             <div id="comment-block-@notification.NotificationId" style="display:none">
@@ -86,21 +86,21 @@
                                                 {
                                                     @foreach (var comment in dict[notification.NotificationId])
                                                     {
-                                                                    <div class="d-flex align-items-start">
-                                                                        <img src="~/img/avatars/avatar-default.png" width="36" height="36" class="rounded-circle me-2" alt="Charles Hall">
-                                                                        <div class="card flex-grow-1">
-                                                                            <div class="m-1">
-                                                                                <strong>@comment.Username</strong>
-                                                                                <div class="p-2 mt-1" style="background-color: #F5F7FB">
+                                                        <div class="d-flex align-items-start">
+                                                            <img src="~/img/avatars/avatar-default.png" width="36" height="36" class="rounded-circle me-2" alt="Charles Hall">
+                                                            <div class="card flex-grow-1">
+                                                                <div class="m-1">
+                                                                    <strong>@comment.Username</strong>
+                                                                    <div class="p-2 mt-1" style="background-color: #F5F7FB">
                                                                         @comment.Text
-                                                                                </div>
-                                                                                <small class="text-muted">Today 7:21 pm</small>
-                                                                            </div>
-                                                                        </div>
                                                                     </div>
+                                                                    <small class="text-muted">Today 7:21 pm</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     }
-                                                            <hr />
-                                                } 
+                                                    <hr />
+                                                }
                                             </div>
 
                                             <div class="d-flex row" style="display:none;" id="notification-@notification.NotificationId">
@@ -111,13 +111,13 @@
                                                     <input type="hidden" name="usernameComment" value="@name" />
                                                     <div class="d-flex flex-start w-100">
                                                         <img class="rounded-circle shadow-1-strong me-3"
-                                                        src="~/img/avatars/avatar-default.png" alt="avatar" width="40"
-                                                        height="40" />
-                                                    <div class="form-outline w-100">
-                                                        <textarea class="form-control" id="textAreaExample" name="text"
-                                                    rows="2" cols="10" style="background: #fff;" placeholder="Enter your comment here..."></textarea>
-                                                        <label class="form-label" for="textAreaExample" style="display:none;">Message</label>
-                                                    </div>
+                                                         src="~/img/avatars/avatar-default.png" alt="avatar" width="40"
+                                                         height="40" />
+                                                        <div class="form-outline w-100">
+                                                            <textarea class="form-control" id="textAreaExample" name="text"
+                                                                  rows="2" cols="10" style="background: #fff;" placeholder="Enter your comment here..."></textarea>
+                                                            <label class="form-label" for="textAreaExample" style="display:none;">Message</label>
+                                                        </div>
                                                     </div>
                                                     <div class="float-end mt-2 pt-1">
                                                         <button type="submit" class="btn btn-primary btn-sm">Post comment</button>
@@ -137,11 +137,11 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-grid">
-                                        <a asp-controller="Topic" asp-action="Index" asp-route-courseId="@ViewBag.CourseId"  class="btn btn-primary">View Topics</a>
+                                        <a asp-controller="Topic" asp-action="Index" asp-route-courseId="@ViewBag.CourseId" class="btn btn-primary">View Topics</a>
                                     </div>
                                     <br />
                                     <div class="d-grid">
-                                        <a asp-controller="Document" asp-action="Index" asp-route-courseId="@ViewBag.CourseId"  class="btn btn-primary">View Documentations</a>
+                                        <a asp-controller="Document" asp-action="Index" asp-route-courseId="@ViewBag.CourseId" class="btn btn-primary">View Documentations</a>
                                     </div>
                                 </div>
                             </div>
@@ -199,24 +199,25 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script>
     // Add an event listener to the parent element that contains all the buttons
-    document.getElementById('buttons-container').addEventListener('click', function(event) {
-    // Check if the clicked element is a button
-    if (event.target && event.target.nodeName === 'BUTTON') {
-        // Get the ID of the button that was clicked
-        var id = event.target.id;
-        console.log(id);
-        // Pass the ID to the showComment function
-        showComment(id);
-    }});
+    document.getElementById('buttons-container').addEventListener('click', function (event) {
+        // Check if the clicked element is a button
+        if (event.target && event.target.nodeName === 'BUTTON') {
+            // Get the ID of the button that was clicked
+            var id = event.target.id;
+            console.log(id);
+            // Pass the ID to the showComment function
+            showComment(id);
+        }
+    });
 
     // The showComment function remains the same
     function showComment(id) {
         var comment = document.getElementById('comment-block-' + id);
         console.log(comment);
         if (comment.style.display == 'none') {
-                comment.style.display = 'block';
-            } else if (comment.style.display == 'block') {
-                comment.style.display = 'none';
-            };
+            comment.style.display = 'block';
+        } else if (comment.style.display == 'block') {
+            comment.style.display = 'none';
+        };
     }
 </script>

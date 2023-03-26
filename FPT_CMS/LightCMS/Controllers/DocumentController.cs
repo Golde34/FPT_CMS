@@ -47,14 +47,12 @@ namespace LightCMS.Controllers
                     dynamic? files = JsonConvert.DeserializeObject<IEnumerable<DocFileDTO>>(strFiles);
                     filesDict.Add(doc.DocumentId, files);
                 }
-
                 ViewBag.File = filesDict;
             }
             else
             {
                 ViewBag.File = null;
             }
-
 
             string strWebRootPath =
                 await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
@@ -127,8 +125,39 @@ namespace LightCMS.Controllers
                     }
                 }
             }
+			string strDocument = await jwtService.GetObjects(
+				CustomAPIDirection.GetCustomAPIDirection("Document/GetDocumentsByCourseId/" + courseId), this.client);
+			IEnumerable<DocumentDTO> documents = JsonConvert.DeserializeObject<IEnumerable<DocumentDTO>>(strDocument);
+			ViewBag.Document = documents;
 
-            return RedirectToAction("Index");
+			Dictionary<object, dynamic> filesDict = new Dictionary<object, dynamic>();
+
+			if (documents != null)
+			{
+				foreach (var doc in documents)
+				{
+					string strFiles = await jwtService.GetObjects(
+						CustomAPIDirection.GetCustomAPIDirection("Document/GetDocumentFilesByDocumentId/" +
+																 doc.DocumentId), this.client);
+					if (strFiles.Equals(String.Empty)) continue;
+					dynamic? docFiles = JsonConvert.DeserializeObject<IEnumerable<DocFileDTO>>(strFiles);
+					filesDict.Add(doc.DocumentId, docFiles);
+				}
+				ViewBag.File = filesDict;
+			}
+			else
+			{
+				ViewBag.File = null;
+			}
+
+			string strWebRootPath =
+				await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
+					this.client);
+			ViewBag.WebRootPath = strWebRootPath;
+
+			ViewBag.CourseId = courseId;
+
+			return View("Index");
         }
     }
 }

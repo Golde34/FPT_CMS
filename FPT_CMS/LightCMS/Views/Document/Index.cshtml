@@ -1,37 +1,37 @@
 ﻿@using LightCMS.DTO;
 
 @{
-	ViewData["Title"] = "Topic";
-	var role = "";
-	if (Context.Session.GetString("Role") != null)
-	{
-		role = Context.Session.GetString("Role");
-	}
-	Dictionary<object, object> dict = ViewBag.File;
-	var webRootPath = ViewBag.WebRootPath + "//Document//";
-	var accountId = "";
-	if (Context.Session.GetString("AccountId") != null)
-	{
-		accountId = Context.Session.GetString("AccountId");
-	}
+    ViewData["Title"] = "Topic";
+    var role = "";
+    if (Context.Session.GetString("Role") != null)
+    {
+        role = Context.Session.GetString("Role");
+    }
+    Dictionary<object, object> dict = ViewBag.File;
+    var webRootPath = ViewBag.WebRootPath + "//Document//";
+    var accountId = "";
+    if (Context.Session.GetString("AccountId") != null)
+    {
+        accountId = Context.Session.GetString("AccountId");
+    }
 }
 
 <body>
-	<div class="wrapper">
+    <div class="wrapper">
 
-		<div id="sb-partialDiv">
-			@await Component.InvokeAsync("Sidebar", new {})
-		</div>
+        <div id="sb-partialDiv">
+            @await Component.InvokeAsync("Sidebar", new {})
+        </div>
 
-		<div class="main">
-			<div id="sb-partialDiv">
-				@await Component.InvokeAsync("Navbar", new {})
-			</div>
+        <div class="main">
+            <div id="sb-partialDiv">
+                @await Component.InvokeAsync("Navbar", new {})
+            </div>
             <main class="content">
                 <div class="container-fluid p-0 col-lg-10">
 
                     <div class="mb-3">
-						<h1 class="h3 d-inline align-middle">All Document(s)</h1>
+                        <h1 class="h3 d-inline align-middle">All Document(s)</h1>
                     </div>
                     <div class="row">
                         <div class="col-md-8 col-xl-9">
@@ -39,7 +39,7 @@
                                 <div class="card-body h-30">
                                     <div class="d-flex align-items-start">
                                         <a class="btn btn-primary" asp-controller="Document" asp-action="AddDoc"
-										asp-route-courseId="@ViewBag.CourseId">
+                                           asp-route-courseId="@ViewBag.CourseId">
                                             Add new document files
                                         </a>
                                     </div>
@@ -47,30 +47,34 @@
                             </div>
                             @if (ViewBag.Document != null && ViewBag.Document.Count > 0)
                             {
-								@foreach (var document in ViewBag.Document)
-								{
-									<div class="card">
-										<div class="card-body h-30">
-											<div class="d-flex align-items-start">
-												@document.DocumentCreate
-											@if (dict[document.DocumentId].Count > 0)
-											{
-												@foreach (var file in dict[document.DocumentId])
-												{
-													<div class="d-flex align-items-start">
-														<div class="card flex-grow-1">
-															<div class="m-1">
-																<strong>@file.UploadFile</strong>
-																<small class="text-muted">Today 7:21 pm</small>
-															</div>
-														</div>
-													</div>
-												}
-											}
-											</div>
-										</div>
-									</div>
-								}
+                                @foreach (var document in ViewBag.Document)
+                                {
+                                    <div class="card">
+                                        <div class="card-body h-50">
+                                            <div class="d-flex align-items-start">
+                                                <div class="flex-grow-1">
+                                                    <strong>@document.DocumentCreate</strong>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            @if (dict[document.DocumentId].Count > 0)
+                                            {
+                                                @foreach (var file in dict[document.DocumentId])
+                                                {
+                                                    <div class="d-flex align-items-start">
+                                                        <div class="card flex-grow-1">
+                                                            <div class="m-1">
+                                                                <strong>@file.UploadFile</strong>
+                                                                <small class="text-muted">Today 7:21 pm</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+                                }
                             }
                         </div>
 
@@ -81,11 +85,11 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-grid">
-										<a href="#" class="btn btn-primary">Filter by Document Files</a><br />
-										<a href="#" class="btn btn-primary">Filter by Notification Files</a><br />
-										<a href="#" class="btn btn-primary">Filter by Topic Files</a><br />
-										<a href="#" class="btn btn-primary">Filter by Student File</a><br />
-									</div>
+                                        <a href="#" class="btn btn-primary">Filter by Document Files</a><br />
+                                        <a href="#" class="btn btn-primary">Filter by Notification Files</a><br />
+                                        <a href="#" class="btn btn-primary">Filter by Topic Files</a><br />
+                                        <a href="#" class="btn btn-primary">Filter by Student File</a><br />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -93,11 +97,11 @@
                 </div>
             </main>
 
-			<div id="sb-partialDiv">
-				@await Component.InvokeAsync("Footer", new {})
-			</div>
-		</div>
-	</div>
+            <div id="sb-partialDiv">
+                @await Component.InvokeAsync("Footer", new {})
+            </div>
+        </div>
+    </div>
 </body>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
