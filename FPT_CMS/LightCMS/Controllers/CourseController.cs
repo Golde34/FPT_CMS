@@ -32,6 +32,7 @@ namespace LightCMS.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             string strData = await response.Content.ReadAsStringAsync();
             dynamic courses = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
 
@@ -48,8 +49,10 @@ namespace LightCMS.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             string strData = await response.Content.ReadAsStringAsync();
-            List<CourseDTO> courses = (List<CourseDTO>)Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
+            List<CourseDTO> courses =
+                (List<CourseDTO>)Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
 
             return View(courses.Where(c => c.CourseName.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList());
         }
@@ -63,6 +66,7 @@ namespace LightCMS.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             string strData = await response.Content.ReadAsStringAsync();
             dynamic courses = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
 
@@ -78,6 +82,7 @@ namespace LightCMS.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
             string strData = await response.Content.ReadAsStringAsync();
             dynamic courses = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CourseDTO>>(strData);
 
@@ -86,20 +91,24 @@ namespace LightCMS.Controllers
 
         public async Task<IActionResult> Add()
         {
-			jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-			//Get Subjects
-			string strSubject = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Subject/GetSubjects"), this.client);
+            //Get Subjects
+            string strSubject =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Subject/GetSubjects"),
+                    this.client);
             dynamic? subjects = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubjectDTO>>(strSubject);
             ViewBag.Subject = subjects;
 
-			//Get Semesters
-			string strSemester = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Semester/GetSemesters"), this.client);
+            //Get Semesters
+            string strSemester =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Semester/GetSemesters"),
+                    this.client);
             dynamic? semester = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SemesterDTO>>(strSemester);
             ViewBag.Semester = semester;
 
-			//Get last course
-			string strlastCourse = await jwtService.GetObjects(CmsApiUrl + "/GetLastCourse", this.client);
+            //Get last course
+            string strlastCourse = await jwtService.GetObjects(CmsApiUrl + "/GetLastCourse", this.client);
             dynamic? lastCourse = Newtonsoft.Json.JsonConvert.DeserializeObject<CourseDTO>(strlastCourse);
             string courseId = Convert.ToString(Convert.ToInt32(lastCourse.CourseId) + 1);
             CourseDTO course = new CourseDTO
@@ -115,9 +124,9 @@ namespace LightCMS.Controllers
         {
             HttpResponseMessage response;
             string strData;
-			jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
+            jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-			if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 strData = Newtonsoft.Json.JsonConvert.SerializeObject(courseDTO);
                 HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
@@ -128,11 +137,15 @@ namespace LightCMS.Controllers
                 }
             }
 
-			string strSubject = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Subject/GetSubjects"), this.client);
-			dynamic? subjects = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubjectDTO>>(strSubject);
+            string strSubject =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Subject/GetSubjects"),
+                    this.client);
+            dynamic? subjects = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubjectDTO>>(strSubject);
             ViewBag.Subject = subjects;
 
-			string strSemester = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Semester/GetSemesters"), this.client);
+            string strSemester =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Semester/GetSemesters"),
+                    this.client);
             dynamic? semester = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SemesterDTO>>(strSemester);
             ViewBag.Semester = semester;
 
@@ -148,7 +161,8 @@ namespace LightCMS.Controllers
                 id = courseId
             });
             HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync("http://localhost:5195/api/Enrollments/AddEnroll", content);
+            HttpResponseMessage response =
+                await client.PostAsync("http://localhost:5195/api/Enrollments/AddEnroll", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -161,7 +175,8 @@ namespace LightCMS.Controllers
         public async Task<IActionResult> Unenroll(string courseId)
         {
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
-            HttpResponseMessage response = await client.DeleteAsync("http://localhost:5195/api/Enrollments/DeleteEnroll?courseId="+courseId);
+            HttpResponseMessage response =
+                await client.DeleteAsync("http://localhost:5195/api/Enrollments/DeleteEnroll?courseId=" + courseId);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -174,7 +189,8 @@ namespace LightCMS.Controllers
         //Course Detail
         public async Task<IActionResult> Detail(int id)
         {
-            if (HttpContext.Session.GetString("isLoggedIn") == null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            if (HttpContext.Session.GetString("isLoggedIn") == null ||
+                !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -183,7 +199,8 @@ namespace LightCMS.Controllers
 
             if (HttpContext.Session.GetString("Role").Equals("Teacher"))
             {
-                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Teacher/IsManagedBy?courseId=" + id);
+                HttpResponseMessage response =
+                    await client.GetAsync("http://localhost:5195/api/Teacher/IsManagedBy?courseId=" + id);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -192,7 +209,8 @@ namespace LightCMS.Controllers
             }
             else
             {
-                HttpResponseMessage response = await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + id);
+                HttpResponseMessage response =
+                    await client.GetAsync("http://localhost:5195/api/Enrollments/IsEnrolledIn?courseId=" + id);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -202,20 +220,28 @@ namespace LightCMS.Controllers
 
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
 
-			//Get Notifications
-			string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + id), this.client);
-			IEnumerable<NotificationDTO> notifications = JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+            //Get Notifications
+            string strNotification =
+                await jwtService.GetObjects(
+                    CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + id), this.client);
+            IEnumerable<NotificationDTO> notifications =
+                JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
             ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
             {
-                string strComment = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId), this.client);
+                string strComment = await jwtService.GetObjects(
+                    CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId),
+                    this.client);
                 dynamic? comments = JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
-                commentsDict.Add(noti.NotificationId, comments); 
+                commentsDict.Add(noti.NotificationId, comments);
             }
+
             ViewBag.Comment = commentsDict;
 
-            string strWebRootPath = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"), this.client);
+            string strWebRootPath =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
+                    this.client);
             ViewBag.WebRootPath = strWebRootPath;
 
             ViewBag.CourseId = id;
@@ -239,7 +265,8 @@ namespace LightCMS.Controllers
                         if (HttpContext.Session.GetString("JWT") != null)
                         {
                             var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
-                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+                            client.DefaultRequestHeaders.Authorization =
+                                new AuthenticationHeaderValue("Bearer", token.ToString());
                         }
 
                         // Add file content
@@ -253,7 +280,8 @@ namespace LightCMS.Controllers
 
                         if (ModelState.IsValid)
                         {
-                            response = await client.PostAsync("http://localhost:5195/api/Notification/AddNotification", content);
+                            response = await client.PostAsync("http://localhost:5195/api/Notification/AddNotification",
+                                content);
                             if (!response.IsSuccessStatusCode)
                             {
                                 return RedirectToAction("Detail");
@@ -262,19 +290,25 @@ namespace LightCMS.Controllers
                     }
                 }
             }
-            
+
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
             //Get Notifications
-            string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + notificationDTO.CourseId), this.client);
-            IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+            string strNotification = await jwtService.GetObjects(
+                CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + notificationDTO.CourseId),
+                this.client);
+            IEnumerable<NotificationDTO> notifications =
+                Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
             ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
             {
-                string strComment = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId), this.client);
+                string strComment = await jwtService.GetObjects(
+                    CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId),
+                    this.client);
                 dynamic? comments = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
                 commentsDict.Add(noti.NotificationId, comments);
             }
+
             ViewBag.Comment = commentsDict;
 
             ViewBag.CourseId = notificationDTO.CourseId;
@@ -282,7 +316,8 @@ namespace LightCMS.Controllers
             return View("Detail");
         }
 
-        public async Task<IActionResult> AddComment([FromForm] string text, [FromForm] string accountId, [FromForm] int notificationId, [FromForm] string usernameComment, [FromForm] string courseId)
+        public async Task<IActionResult> AddComment([FromForm] string text, [FromForm] string accountId,
+            [FromForm] int notificationId, [FromForm] string usernameComment, [FromForm] string courseId)
         {
             HttpResponseMessage response;
             string strData;
@@ -307,16 +342,21 @@ namespace LightCMS.Controllers
 
             Dictionary<object, dynamic> commentsDict = new Dictionary<object, dynamic>();
             //Get Notifications
-            string strNotification = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + courseId), this.client);
-            IEnumerable<NotificationDTO> notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
+            string strNotification = await jwtService.GetObjects(
+                CustomAPIDirection.GetCustomAPIDirection("Notification/GetNotifications/" + courseId), this.client);
+            IEnumerable<NotificationDTO> notifications =
+                Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<NotificationDTO>>(strNotification);
             ViewBag.Notification = notifications;
 
             foreach (var noti in notifications)
             {
-                string strComment = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId), this.client);
+                string strComment = await jwtService.GetObjects(
+                    CustomAPIDirection.GetCustomAPIDirection("Notification/GetComments/" + noti.NotificationId),
+                    this.client);
                 dynamic? comments = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strComment);
                 commentsDict.Add(noti.NotificationId, comments);
             }
+
             ViewBag.Comment = commentsDict;
 
             ViewBag.CourseId = notifications.First().CourseId;

@@ -7,26 +7,32 @@ using Server.Repository;
 
 namespace Server.Controllers
 {
+    [Route("api/[controller]/[action]")]
     public class DocumentController : Controller
     {
-		private readonly IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
-		public DocumentController(IWebHostEnvironment env)
-		{
-			_env = env;
-		}
-		public IActionResult GetDocumentsByCourseId(string courseId)
+        public DocumentController(IWebHostEnvironment env)
         {
-			var webRootPath = _env.WebRootPath;
-			if (!Directory.Exists(webRootPath + "\\Document\\"))
-			{
-				Directory.CreateDirectory(webRootPath + "\\Document\\");
-			}
-			DocumentManagement docManage = new DocumentManagement();
+            _env = env;
+        }
+
+        [HttpGet]
+        [Route("{courseId}")]
+        public IActionResult GetDocumentsByCourseId(string courseId)
+        {
+            var webRootPath = _env.WebRootPath;
+            if (!Directory.Exists(webRootPath + "\\Document\\"))
+            {
+                Directory.CreateDirectory(webRootPath + "\\Document\\");
+            }
+
+            DocumentManagement docManage = new DocumentManagement();
             List<Document> documents = docManage.GetDocumentsByCourseId(courseId);
             return Ok(documents);
         }
 
+        [HttpGet, Route("{documentId}")]
         public IActionResult GetDocumentFilesByDocumentId(int documentId)
         {
             DocumentFileManagement filesManage = new DocumentFileManagement();
@@ -35,14 +41,16 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDocument([FromForm] string AccountId, [FromForm] string CourseId, [FromForm] IEnumerable<IFormFile> files)
+        public async Task<IActionResult> AddDocument([FromForm] string AccountId, [FromForm] string CourseId,
+            [FromForm] IEnumerable<IFormFile> files)
         {
-			var webRootPath = _env.WebRootPath;
-			if (!Directory.Exists(webRootPath + "\\Document\\"))
-			{
-				Directory.CreateDirectory(webRootPath + "\\Document\\");
-			}
-			DocumentManagement docManage = new DocumentManagement();
+            var webRootPath = _env.WebRootPath;
+            if (!Directory.Exists(webRootPath + "\\Document\\"))
+            {
+                Directory.CreateDirectory(webRootPath + "\\Document\\");
+            }
+
+            DocumentManagement docManage = new DocumentManagement();
             DocumentFileManagement filesManage = new DocumentFileManagement();
             var now = DateTime.Now;
             docManage.AddDocument(new Document
@@ -70,9 +78,10 @@ namespace Server.Controllers
                             DocumentationId = savedDoc.DocumentId
                         });
                         // Example response to return to frontend
-                        return Ok(new { message = "File uploaded successfully" });
                     }
                 }
+
+                return Ok(new { message = "File uploaded successfully" });
             }
 
             // If no files were uploaded

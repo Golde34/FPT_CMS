@@ -71,6 +71,7 @@ namespace Server.Controllers
             {
                 return NotFound();
             }
+
             List<Enrollment> enrollments = (List<Enrollment>)enrollmentRepo.GetEnrollmentsByStudentId(student.Id);
 
             var courses = enrollments.Select(e => new
@@ -102,10 +103,11 @@ namespace Server.Controllers
             var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
 
             Teacher teacher = teacherRepo.GetTeacherByAccountId(accountId.ToString());
-            if(teacher == null)
+            if (teacher == null)
             {
                 return NotFound();
             }
+
             List<Course> courses = courseRepo.GetCourses().Where(c => c.TeacherId == teacher.Id).ToList();
 
             return Ok(courses);
@@ -187,9 +189,8 @@ namespace Server.Controllers
             {
                 throw new Exception(e.Message);
             }
+
             return _course;
         }
-
-
     }
 }

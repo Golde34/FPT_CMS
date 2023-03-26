@@ -21,14 +21,16 @@ namespace LightCMS.Controllers
 
         public async Task<IActionResult> Index(string courseId)
         {
-            if (HttpContext.Session.GetString("isLoggedIn") == null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            if (HttpContext.Session.GetString("isLoggedIn") == null ||
+                !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
             {
                 return RedirectToAction("Login", "Account");
             }
 
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
-            string strDocument = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Document/GetDocumentsByCourseId/" + courseId), this.client);
+            string strDocument = await jwtService.GetObjects(
+                CustomAPIDirection.GetCustomAPIDirection("Document/GetDocumentsByCourseId/" + courseId), this.client);
             IEnumerable<DocumentDTO> documents = JsonConvert.DeserializeObject<IEnumerable<DocumentDTO>>(strDocument);
             ViewBag.Document = documents;
 
@@ -38,18 +40,25 @@ namespace LightCMS.Controllers
             {
                 foreach (var doc in documents)
                 {
-                    string strFiles = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Document/GetDocumentFilesByDocumentId/" + doc.DocumentId), this.client);
-                    dynamic? files = JsonConvert.DeserializeObject<IEnumerable<CommentDTO>>(strFiles);
+                    string strFiles = await jwtService.GetObjects(
+                        CustomAPIDirection.GetCustomAPIDirection("Document/GetDocumentFilesByDocumentId/" +
+                                                                 doc.DocumentId), this.client);
+                    if (strFiles.Equals(String.Empty)) continue;
+                    dynamic? files = JsonConvert.DeserializeObject<IEnumerable<DocFileDTO>>(strFiles);
                     filesDict.Add(doc.DocumentId, files);
                 }
+
                 ViewBag.File = filesDict;
-            } else
+            }
+            else
             {
                 ViewBag.File = null;
             }
-            
 
-            string strWebRootPath = await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"), this.client);
+
+            string strWebRootPath =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
+                    this.client);
             ViewBag.WebRootPath = strWebRootPath;
 
             ViewBag.CourseId = courseId;
@@ -60,17 +69,20 @@ namespace LightCMS.Controllers
         [HttpGet]
         public IActionResult AddDoc(string courseId)
         {
-            if (HttpContext.Session.GetString("isLoggedIn") == null || !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
+            if (HttpContext.Session.GetString("isLoggedIn") == null ||
+                !HttpContext.Session.GetString("isLoggedIn").Equals("true"))
             {
                 return RedirectToAction("Login", "Account");
             }
+
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
             ViewBag.CourseId = courseId;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDoc([FromForm] string accountId, [FromForm] string courseId, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> AddDoc([FromForm] string accountId, [FromForm] string courseId,
+            [FromForm(Name = "files")] List<IFormFile> files)
         {
             HttpResponseMessage response;
             string strData;
@@ -86,7 +98,8 @@ namespace LightCMS.Controllers
                         if (HttpContext.Session.GetString("JWT") != null)
                         {
                             var token = HttpContext.Session.GetString("JWT").Replace('"', ' ').Trim();
-                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString());
+                            client.DefaultRequestHeaders.Authorization =
+                                new AuthenticationHeaderValue("Bearer", token.ToString());
                         }
 
                         // Add files content
@@ -96,14 +109,16 @@ namespace LightCMS.Controllers
                             var fileContent = new StreamContent(file.OpenReadStream());
                             content.Add(fileContent, "files", file.FileName);
                         }
-                            
+
+
                         // Add other parameters
                         content.Add(new StringContent(accountId), "AccountId");
                         content.Add(new StringContent(courseId), "CourseId");
 
                         if (ModelState.IsValid)
                         {
-                            response = await client.PostAsync("http://localhost:5195/api/Document/AddDocument", content);
+                            response = await client.PostAsync("http://localhost:5195/api/Document/AddDocument",
+                                content);
                             if (!response.IsSuccessStatusCode)
                             {
                                 return RedirectToAction("Index");
@@ -113,7 +128,7 @@ namespace LightCMS.Controllers
                 }
             }
 
-            return View("Index");
+            return RedirectToAction("Index");
         }
     }
 }

@@ -4,11 +4,13 @@ namespace Server.Entity
 {
     public class Account
     {
-        public Account() 
+        public Account()
         {
             Notifications = new List<Notification>();
-            Comments= new List<Comment>();
+            Comments = new List<Comment>();
+            Documents = new List<Document>();
         }
+
         public string Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }

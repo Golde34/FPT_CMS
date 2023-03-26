@@ -75,18 +75,19 @@ namespace Server.Entity
                 entity.HasOne(d => d.Account).WithMany(p => p.Comments).HasForeignKey(d => d.AccountId);
             });
 
-			builder.Entity<Document>(entity =>
-			{
-				entity.HasOne(d => d.Course).WithMany(p => p.Documents).HasForeignKey(d => d.CourseId);
-				entity.HasOne(d => d.Account).WithMany(p => p.Documents).HasForeignKey(d => d.AccountId);
-			});
+            builder.Entity<Document>(entity =>
+            {
+                entity.HasOne(d => d.Course).WithMany(p => p.Documents).HasForeignKey(d => d.CourseId);
+                entity.HasOne(d => d.Account).WithMany(p => p.Documents).HasForeignKey(d => d.AccountId);
+                entity.Property(d => d.DocumentId).ValueGeneratedOnAdd();
+            });
 
-			builder.Entity<DocumentFile>(entity =>
-			{
-				entity.HasOne(d => d.Document).WithMany(p => p.DocumentFiles).HasForeignKey(d => d.DocumentationId);
-			});
+            builder.Entity<DocumentFile>(entity =>
+            {
+                entity.HasOne(d => d.Document).WithMany(p => p.DocumentFiles).HasForeignKey(d => d.DocumentationId);
+            });
 
-			builder.Entity<Enrollment>(entity =>
+            builder.Entity<Enrollment>(entity =>
             {
                 entity.HasOne(d => d.Student).WithMany(p => p.Enrollments).HasForeignKey(d => d.StudentId);
                 entity.HasOne(d => d.Course).WithMany(p => p.Enrollments).HasForeignKey(d => d.CourseId);

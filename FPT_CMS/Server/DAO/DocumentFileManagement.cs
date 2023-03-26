@@ -34,9 +34,9 @@ namespace Server.DAO
 				if (_DocumentFile == null)
 				{
 					var context = new AppDBContext();
-					context.DocumentFiles.Add(_DocumentFile);
+					context.DocumentFiles.Add(DocumentFile);
 					context.SaveChanges();
-					return _DocumentFile;
+					return DocumentFile;
 				}
 				else
 				{
