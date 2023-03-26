@@ -16,5 +16,6 @@ namespace Server.Entity
 
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Document> Documents { get; set; }
     }
 }

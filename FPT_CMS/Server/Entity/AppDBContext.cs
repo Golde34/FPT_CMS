@@ -28,6 +28,8 @@ namespace Server.Entity
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<DocumentFile> DocumentFiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -73,7 +75,18 @@ namespace Server.Entity
                 entity.HasOne(d => d.Account).WithMany(p => p.Comments).HasForeignKey(d => d.AccountId);
             });
 
-            builder.Entity<Enrollment>(entity =>
+			builder.Entity<Document>(entity =>
+			{
+				entity.HasOne(d => d.Course).WithMany(p => p.Documents).HasForeignKey(d => d.CourseId);
+				entity.HasOne(d => d.Account).WithMany(p => p.Documents).HasForeignKey(d => d.AccountId);
+			});
+
+			builder.Entity<DocumentFile>(entity =>
+			{
+				entity.HasOne(d => d.Document).WithMany(p => p.DocumentFiles).HasForeignKey(d => d.DocumentationId);
+			});
+
+			builder.Entity<Enrollment>(entity =>
             {
                 entity.HasOne(d => d.Student).WithMany(p => p.Enrollments).HasForeignKey(d => d.StudentId);
                 entity.HasOne(d => d.Course).WithMany(p => p.Enrollments).HasForeignKey(d => d.CourseId);

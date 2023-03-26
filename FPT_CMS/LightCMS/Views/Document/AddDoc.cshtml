@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Add Document";
+    var courseId = ViewBag.CourseId;
+    var accountId = "";
+    if (Context.Session.GetString("AccountId") != null)
+    {
+        accountId = Context.Session.GetString("AccountId");
+    }
+}
+
+<body>
+<div class="wrapper">   
+    <div id="sb-partialDiv">
+            @await Component.InvokeAsync("Sidebar", new { })
+    </div>
+    <div class="main">
+        <div id="sb-partialDiv">
+                @await Component.InvokeAsync("Navbar", new { })
+        </div>
+        <main class="content">
+            <div class="mb-3">
+                <h1 class="h3 d-inline align-middle">Add new Document</h1>
+                <form method="POST" asp-action="AddDoc" asp-controller="Document"
+                     enctype="multipart/form-data">
+                    <div>
+                        <div>@ViewBag.CourseId</div>
+                        <div>@accountId</div>
+                        <input type="hidden" name="accountId" value="@accountId" />
+                        <input type="hidden" name="courseId" value="@courseId" />
+                        <label for="files">Select one or more files:</label>
+                        <input type="file" id="files" name="files" multiple>
+                    </div>
+                    <div>
+                        <button type="submit">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <div id="sb-partialDiv">
+                @await Component.InvokeAsync("Footer", new { })
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script src="~/js/app.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>

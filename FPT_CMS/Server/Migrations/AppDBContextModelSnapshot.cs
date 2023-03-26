@@ -156,6 +156,59 @@ namespace Server.Migrations
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("Server.Entity.Document", b =>
+                {
+                    b.Property<int>("DocumentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"), 1L, 1);
+
+                    b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CourseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DocumentCreate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("DocumentId");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("Server.Entity.DocumentFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("DocumentationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UploadFile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentationId");
+
+                    b.ToTable("DocumentFiles");
+                });
+
             modelBuilder.Entity("Server.Entity.Enrollment", b =>
                 {
                     b.Property<int>("Id")
@@ -482,6 +535,36 @@ namespace Server.Migrations
                     b.Navigation("Subject");
                 });
 
+            modelBuilder.Entity("Server.Entity.Document", b =>
+                {
+                    b.HasOne("Server.Entity.Account", "Account")
+                        .WithMany("Documents")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Entity.Course", "Course")
+                        .WithMany("Documents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Server.Entity.DocumentFile", b =>
+                {
+                    b.HasOne("Server.Entity.Document", "Document")
+                        .WithMany("DocumentFiles")
+                        .HasForeignKey("DocumentationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Document");
+                });
+
             modelBuilder.Entity("Server.Entity.Enrollment", b =>
                 {
                     b.HasOne("Server.Entity.Course", "Course")
@@ -594,11 +677,15 @@ namespace Server.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Documents");
+
                     b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("Server.Entity.Course", b =>
                 {
+                    b.Navigation("Documents");
+
                     b.Navigation("Enrollments");
 
                     b.Navigation("Grades");
@@ -616,6 +703,11 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Entity.Department", b =>
                 {
                     b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("Server.Entity.Document", b =>
+                {
+                    b.Navigation("DocumentFiles");
                 });
 
             modelBuilder.Entity("Server.Entity.Notification", b =>

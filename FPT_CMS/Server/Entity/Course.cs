@@ -22,7 +22,7 @@ namespace Server.Entity
         public virtual ICollection<Topic> Topics { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }
-
+        public virtual ICollection<Document> Documents { get; set; }
         public virtual Subject? Subject { get; set; }
         public virtual Teacher? Teacher { get; set; }
         public virtual Semester? Semester { get; set; }
