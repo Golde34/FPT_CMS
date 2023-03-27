@@ -29,11 +29,7 @@ namespace LightCMS.Controllers
             string strWebRootPath =
                 await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
                     this.client);
-
-            foreach (var s in submissions)
-            {
-                s.URL = strWebRootPath + "\\Submission\\" + s.URL;
-            }
+            ViewBag.WebRootPath = strWebRootPath;
 
             ViewData["topicId"] = topicId;
 

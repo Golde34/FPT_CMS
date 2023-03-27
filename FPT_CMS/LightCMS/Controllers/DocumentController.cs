@@ -86,6 +86,11 @@ namespace LightCMS.Controllers
             string strData;
             jwtService.JWTToken(HttpContext.Session.GetString("JWT"), this.client);
 
+            string strWebRootPath =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
+                    this.client);
+            ViewBag.WebRootPath = strWebRootPath;
+
             if (files != null && files.Count > 0)
             {
                 using (var client = new HttpClient())
@@ -149,11 +154,6 @@ namespace LightCMS.Controllers
 			{
 				ViewBag.File = null;
 			}
-
-			string strWebRootPath =
-				await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
-					this.client);
-			ViewBag.WebRootPath = strWebRootPath;
 
 			ViewBag.CourseId = courseId;
 

@@ -34,8 +34,9 @@
 									<div class="card-body d-flex justify-content-between">
 										<h5 id="mark-@submission.Id">Mark: @submission.Mark</h5>
 										<div>
-											<button class="btn btn-info">Download</button>
-											<button id="btn-mark" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal" data-id="@submission.Id" data-mark="@submission.Mark">Mark this Submission</button>
+											@submission.URL
+												<button class="btn btn-primary download-file" data-filename="@submission.URL">Download</button>
+												<button id="btn-mark" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal" data-id="@submission.Id" data-mark="@submission.Mark">Mark this Submission</button>
 										</div>										
 									</div>
 								</div>
@@ -123,4 +124,35 @@
 			 alert("You haven't give this submission any mark");
 		 }
 	});
+</script>
+<script>
+	$('.download-file').click(function () {
+			var filename = $(this).data('filename');
+			var url = 'http://localhost:5195/api/Base/DownloadSubmissionFile/?filename=' + filename;
+			console.log(url);
+			var token = 'Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()'; // Replace with your access token function
+
+			$.ajax({
+				type: 'GET',
+				url: url,
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader('Authorization', token); // Set the authorization header
+				},
+				xhrFields: {
+					responseType: 'blob' // Set the response type to blob to handle binary data
+				},
+				success: function (data) {
+					var url = window.URL.createObjectURL(data);
+					var link = document.createElement('a');
+					link.href = url;
+					link.download = filename;
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				},
+				error: function (xhr, status, error) {
+					console.log('Error:', error);
+				}
+			});
+		});
 </script>

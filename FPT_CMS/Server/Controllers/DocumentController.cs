@@ -4,10 +4,13 @@ using Server.Entity;
 using Server.Entity.Enum;
 using Server.Repository.@interface;
 using Server.Repository;
+using System.IO;
+using System.Xml.Linq;
 
 namespace Server.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [ApiController]
     public class DocumentController : Controller
     {
         private readonly IWebHostEnvironment _env;
@@ -69,7 +72,12 @@ namespace Server.Controllers
                         await file.CopyToAsync(stream);
                         var fileBytes = stream.ToArray();
                         var fileName = file.FileName;
-
+                        string path = webRootPath + "\\Document\\" + fileName;
+                        using (FileStream fileStream = System.IO.File.Create(path))
+                        {
+                            file.CopyTo(fileStream);
+                            fileStream.Flush();
+                        }
                         // TODO: Store the file or perform other operations on it as needed
                         filesManage.AddDocumentFile(new DocumentFile
                         {

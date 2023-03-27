@@ -1,0 +1,5 @@
+để hero cầm được weapon
+cộng dam của hero và weapon
+thiết kế việc chọn hero và weapon tự động (hiện đang hash code)
+làm animation cho hero và weapon
+cơ chế fit point

@@ -69,6 +69,7 @@
                                                             <a href="@webRootPath+@notification.UploadFile">
                                                                 @notification.UploadFile
                                                             </a>
+                                                                <button class="btn btn-primary download-file float-end" data-filename="@notification.UploadFile">Download</button>
                                                         </div>
                                                     }
                                                 </div>
@@ -220,4 +221,35 @@
             comment.style.display = 'none';
         };
     }
+</script>
+<script>
+    $('.download-file').click(function () {
+            var filename = $(this).data('filename');
+            var url = 'http://localhost:5195/api/Base/DownloadNotificationFile/?filename=' + filename;
+            console.log(url);
+            var token = 'Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()'; // Replace with your access token function
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', token); // Set the authorization header
+                },
+                xhrFields: {
+                    responseType: 'blob' // Set the response type to blob to handle binary data
+                },
+                success: function (data) {
+                    var url = window.URL.createObjectURL(data);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
 </script>

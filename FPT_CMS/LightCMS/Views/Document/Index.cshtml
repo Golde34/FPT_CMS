@@ -8,7 +8,8 @@
         role = Context.Session.GetString("Role");
     }
     Dictionary<object, object> dict = ViewBag.File;
-    var webRootPath = ViewBag.WebRootPath + "//Document//";
+    var webRootPath = ViewBag.WebRootPath;
+    var strWebRootPath = webRootPath.Substring(1, webRootPath.Length - 2) + "\\Document\\";
     var accountId = "";
     if (Context.Session.GetString("AccountId") != null)
     {
@@ -18,7 +19,6 @@
 
 <body>
     <div class="wrapper">
-
         <div id="sb-partialDiv">
             @await Component.InvokeAsync("Sidebar", new {})
         </div>
@@ -65,7 +65,10 @@
                                                         <div class="card flex-grow-1">
                                                             <div class="m-1">
                                                                 <strong>@file.UploadFile</strong>
-                                                                <small class="text-muted">Today 7:21 pm</small>
+                                                                <small class="text-muted">
+                                                                     <button class="btn btn-primary download-file" 
+                                                                                    data-filename="@file.UploadFile">Download</button>
+                                                                </small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -110,3 +113,34 @@
 <script src="~/js/app.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="https://unpkg.com/feather-icons"></script>
+<script>
+    $('.download-file').click(function () {
+            var filename = $(this).data('filename');
+            var url = 'http://localhost:5195/api/Base/DownloadDocumentFile/?filename=' + filename;
+            console.log(url);
+            var token = 'Bearer @Context.Session.GetString("JWT").Replace('"', ' ').Trim().ToString()'; // Replace with your access token function
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', token); // Set the authorization header
+                },
+                xhrFields: {
+                    responseType: 'blob' // Set the response type to blob to handle binary data
+                },
+                success: function (data) {
+                    var url = window.URL.createObjectURL(data);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+</script>
