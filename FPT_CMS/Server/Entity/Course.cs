@@ -8,7 +8,9 @@ namespace Server.Entity
         {
             Grades = new List<Grade>();
             Topics = new List<Topic>();
-            Notifications= new List<Notification>();
+            Notifications = new List<Notification>();
+            Enrollments = new List<Enrollment>();
+            Documents = new List<Document>();
         }
 
         public string CourseId { get; set; }

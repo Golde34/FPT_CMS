@@ -128,6 +128,7 @@ namespace LightCMS.Controllers
 
             if (ModelState.IsValid)
             {
+                courseDTO.TeacherId = "string";
                 strData = Newtonsoft.Json.JsonConvert.SerializeObject(courseDTO);
                 HttpContent content = new StringContent(strData, Encoding.UTF8, "application/json");
                 response = await client.PostAsync(CmsApiUrl + "/AddCourse", content);

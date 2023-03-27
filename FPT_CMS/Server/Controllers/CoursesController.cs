@@ -115,21 +115,37 @@ namespace Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Teacher")]
-        public IActionResult AddCourse(CourseDTO course)
+        public IActionResult AddCourse(Course course)
         {
-            // string? tokenParse = DecodeJwtToken.GetRoleFromToken(Request.Headers[HeaderNames.Authorization]);
-            // if (tokenParse == null)
-            // {
-            //     return Unauthorized();
-            // }
-            // if (!tokenParse.Equals(Roles.Teacher.ToString()))
-            // {
-            //     return Forbid();
-            // }
             if (course == null)
             {
                 return BadRequest();
             }
+
+            // Decode the token and get the role of account
+            StringValues values;
+            Request.Headers.TryGetValue("Authorization", out values);
+            var token = values.ToString();
+            string[] tokens = token.Split(" ");
+
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
+            var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
+
+            Teacher teacher = teacherRepo.GetTeacherByAccountId(accountId.ToString());
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+
+            //Course course = new Course();
+            //course.CourseId = courseDTO.CourseId;
+            //course.CourseName = courseDTO.CourseName;
+            //course.Slot = courseDTO.Slot;
+            //course.SemesterId = courseDTO.SemesterId;
+            //course.SubjectCode = course.SubjectCode;
+            course.TeacherId = teacher.Id;
 
             var _courseManagement = new CourseManagement();
             _courseManagement.AddCourse(course);

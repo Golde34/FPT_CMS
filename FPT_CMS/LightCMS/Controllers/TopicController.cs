@@ -139,12 +139,12 @@ namespace LightCMS.Controllers
                         // Process the response as needed
                         if (response.IsSuccessStatusCode)
                         {
-                            return RedirectToAction("TopicContent", new { topicId = topicId });
+                            return RedirectToAction("Content", new { topicId = topicId });
                         }
                     }
                 }
             }
-            return RedirectToAction("TopicContent", new { topicId = topicId });
+            return RedirectToAction("Content", new { topicId = topicId });
         }
     }
 }

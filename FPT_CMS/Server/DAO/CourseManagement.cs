@@ -26,30 +26,14 @@ namespace Server.DAO
             }
         }
 
-        public Course AddCourse(CourseDTO course)
+        public Course AddCourse(Course course)
         {
             try
             {
-                Course _Course = new Course
-                {
-                    CourseId = course.CourseID,
-                    CourseName = course.CourseName,
-                    Slot = Convert.ToInt32(course.Slot),
-                    SemesterId = course.Semester,
-                    SubjectCode = course.Subject
-                };
-                Course _course = GetCourseById(_Course.CourseId);
-                if (_course == null)
-                {
-                    var context = new AppDBContext();
-                    context.Courses.Add(_Course);
-                    context.SaveChanges();
-                    return _course;
-                }
-                else
-                {
-                    throw new Exception("The Course's username has already been taken.");
-                }
+                var context = new AppDBContext();
+                context.Courses.Add(course);
+                context.SaveChanges();
+                return course;
             }
             catch (Exception e)
             {

@@ -40,7 +40,7 @@
                                 <h5 class="card-title mb-0">Semester</h5>
                             </div>
                             <div class="card-body">
-                                <select asp-for="Semester" class="form-select mb-3">
+                                <select asp-for="SemesterId" class="form-select mb-3">
                                     @foreach (var semester in ViewBag.Semester)
                                     {
                                         <option value="@semester.SemesterID">@semester.SemesterID</option>
@@ -53,7 +53,7 @@
                                 <h5 class="card-title mb-0">Subject</h5>
                             </div>
                             <div class="card-body">
-                                <select asp-for="Subject" class="form-select mb-3">
+                                <select asp-for="SubjectCode" class="form-select mb-3">
                                     @foreach (var subject in ViewBag.Subject)
                                     {
                                         <option value="@subject.SubjectCode">@subject.SubjectName</option>
