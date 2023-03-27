@@ -134,7 +134,7 @@ namespace LightCMS.Controllers
                 response = await client.PostAsync(CmsApiUrl + "/AddCourse", content);
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("ManagedCourse");
                 }
             }
 
