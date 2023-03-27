@@ -1,5 +1,6 @@
 ﻿using LightCMS.DTO;
 using LightCMS.Services;
+using LightCMS.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 
@@ -24,6 +25,15 @@ namespace LightCMS.Controllers
 
             string strSubmissions = await jwtService.GetObjects("http://localhost:5195/api/Submission/GetSubmissions/" + topicId, this.client);
             IEnumerable<SubmissionDTO> submissions = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<SubmissionDTO>>(strSubmissions);
+
+            string strWebRootPath =
+                await jwtService.GetObjects(CustomAPIDirection.GetCustomAPIDirection("Base/GetWebRootPath"),
+                    this.client);
+
+            foreach (var s in submissions)
+            {
+                s.URL = strWebRootPath + "\\Submission\\" + s.URL;
+            }
 
             ViewData["topicId"] = topicId;
 

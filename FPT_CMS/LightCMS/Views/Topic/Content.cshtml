@@ -37,12 +37,10 @@
 									<div class="card">
 										<img class="card-img-top" src="https://images02.vietnamworks.com//companyprofile/FPT-Education/en/image6.jpg" alt="Unsplash">
 										<div class="card-header">
-											<h5 class="card-title mb-0">Assignment 1</h5>
+											<h5 class="card-title mb-0">@Model.Title</h5>
 										</div>
 										<div class="card-body">
-											<p class="card-text">Write a program that prints the numbers from 1 to 100. 
-												But for multiples of three print Fizz instead of the number and for the multiples of five print Buzz. 
-												For numbers which are multiples of both three and five print FizzBuzz.</p>
+											<p class="card-text">@Model.Requirement</p>
 										@if (today > Model.Due)
 										{
 													<p class="text-danger">Overdue</p>

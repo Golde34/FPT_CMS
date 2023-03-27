@@ -99,7 +99,7 @@ namespace Server.Controllers
             Submission submission = new Submission();
             submission.Id = 0;
             submission.SubmitDate = DateTime.Now;
-            submission.URL = path;
+            submission.URL = id + "_" + name + ".rar";
             submission.StudentId = studentRepo.GetStudentByAccountId(id).Id;
             submission.TopicId = topicId;
 
