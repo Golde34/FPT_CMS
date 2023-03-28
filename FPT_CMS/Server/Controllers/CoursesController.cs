@@ -28,27 +28,8 @@ namespace Server.Controllers
         [Authorize(Roles = "Student")]
         public ActionResult<List<Course>> GetCourses()
         {
-            // string? tokenParse = DecodeJwtToken.GetRoleFromToken(Request.Headers[HeaderNames.Authorization]);
-            // if (tokenParse == null)
-            // {
-            //     return Unauthorized();
-            // }
-            // if (!tokenParse.Equals(Roles.Teacher.ToString()))
-            // {
-            //     return Forbid();
-            // }
-            List<Course> _courses;
-            try
-            {
-                var _courseManagement = new CourseManagement();
-                _courses = _courseManagement.GetCourses().ToList();
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-
-            return _courses;
+            var _courses = courseRepo.GetCourses().ToList();
+            return Ok(_courses);
         }
 
         [HttpGet]
@@ -156,56 +137,18 @@ namespace Server.Controllers
         [Authorize(Roles = "Teacher")]
         public IActionResult EditCourse(Course course)
         {
-            // string? tokenParse = DecodeJwtToken.GetRoleFromToken(Request.Headers[HeaderNames.Authorization]);
-            // if (tokenParse == null)
-            // {
-            //     return Unauthorized();
-            // }
-            // if (!tokenParse.Equals(Roles.Teacher.ToString()))
-            // {
-            //     return Forbid();
-            // }
             if (course == null)
             {
                 return BadRequest();
             }
-
-            var _courseManagement = new CourseManagement();
-            _courseManagement.UpdateCourse(course);
+            courseRepo.UpdateCourse(course);
             return Ok();
         }
 
         [HttpGet("{id}")]
         public Course GetCourseByID(string id)
         {
-            Course _course;
-            try
-            {
-                var _courseManagement = new CourseManagement();
-                _course = _courseManagement.GetCourseById(id.ToString());
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-
-            return _course;
-        }
-
-        [HttpGet]
-        public Course GetLastCourse()
-        {
-            Course _course;
-            try
-            {
-                var _courseManagement = new CourseManagement();
-                _course = _courseManagement.GetLastCourse();
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-
+            Course _course = courseRepo.GetCourseById(id);
             return _course;
         }
     }
