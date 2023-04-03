@@ -29,7 +29,6 @@ namespace Server.Controllers
             var token = values.ToString();
             string[] tokens = token.Split(" ");
 
-
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
             var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
@@ -73,7 +72,6 @@ namespace Server.Controllers
             var token = values.ToString();
             string[] tokens = token.Split(" ");
 
-
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
             var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
@@ -111,7 +109,6 @@ namespace Server.Controllers
             Request.Headers.TryGetValue("Authorization", out values);
             var token = values.ToString();
             string[] tokens = token.Split(" ");
-
 
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);

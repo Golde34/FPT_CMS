@@ -42,7 +42,6 @@ namespace Server.Controllers
             var token = values.ToString();
             string[] tokens = token.Split(" ");
 
-
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
             var accountId = jwtSecurityToken.Claims.First(claim => claim.Type == "Id").Value;
@@ -77,7 +76,6 @@ namespace Server.Controllers
             Request.Headers.TryGetValue("Authorization", out values);
             var token = values.ToString();
             string[] tokens = token.Split(" ");
-
 
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(tokens[1]);
@@ -119,13 +117,6 @@ namespace Server.Controllers
             {
                 return NotFound();
             }
-
-            //Course course = new Course();
-            //course.CourseId = courseDTO.CourseId;
-            //course.CourseName = courseDTO.CourseName;
-            //course.Slot = courseDTO.Slot;
-            //course.SemesterId = courseDTO.SemesterId;
-            //course.SubjectCode = course.SubjectCode;
             course.TeacherId = teacher.Id;
 
             var _courseManagement = new CourseManagement();

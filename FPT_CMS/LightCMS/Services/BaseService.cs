@@ -19,6 +19,15 @@ namespace LightCMS.Services
 			}
 		}
 
+		public ActionResult CheckLoggedIn(string session)
+		{
+            if (session == null || !session.Equals("true"))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+			return null;
+        }
+
 		public async Task<string> GetObjects(string _object, HttpClient _client)
 		{
 			HttpResponseMessage _response = await _client.GetAsync(_object);
